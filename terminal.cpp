@@ -1,86 +1,77 @@
-#ifndef TERMINAL_H
-#define TERMINAL_H
-#include "arbol.h"
-#include <vector>
- #define CMD_CD 1
-#define CMD_MKDIR 2
-#define CMD_EXIT 
-
-typedef struct comando_t{
-    int tipo;
-    std::vector<char*> argumentos;
-}comando_t;
-
-class Terminal{
-    const char* comandos[2]={
-        "cd", 
-        "mkdir", 
-        "exit"
-    };
-   
-
-    public:
-    Arbol* arbol;
-    Terminal();
-    void run();
-    void lee_comando(comando_t* comando);
-    void ejecuta_comando(comando_t comando);
-    int get_tipo_comando(char* comando);
-};
-arbol.h y .cpp están vacíos. 
-cpp:
-
 #include "terminal.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
+
 Terminal::Terminal()
 {
-    arbol=new ARbol();
+    tree = new DataTree();
 }
 
 
 void Terminal::run(){
     bool exit=false;
-    int comando=-1;
-    comando_t comando;
-    comando.argumentos= new vector<char*>();
+    command_t command;
+    command.args= new vector<char*>();
     while(!exit){
-        lee_comando(&comando);
+        lee_comando(&command);
         ejecuta_comando(&comando);
     }
 }
-void Terminal:: lee_comando(comando_t* comando){
-    char* linea=new char [1024];
-    char separador[2]=" ";
+void Terminal::lee_comando(command_t* command){
+    char* line=new char [1024];
+    char spacer[2]=" ";
     char* token=NULL;
     
     //leer terminal
-    fgets(linea, 1023, stdin);
+    fgets(line, 1023, stdin);
     //subdividir en argumentos
         //string tokenizer
         //ej: cd .., tokenizer devolvera cd en token
     //gestion de errores:
         //User no introdujo comando
-    token=strtok(linea, separador);
-    comando->tipo=get_tipo_comando(token);
+    token=strtok(line, spacer);
+    command->type=get_tipo_comando(token);
     while(token!=NULL){
-        token=strtok(NULL, separador);
+        token=strtok(NULL, spacer);
         comando->argumentos->push_back(token);
     }
 }
 
-int Terminal::get_tipo_comando(char* comando)
+command_e Terminal::get_tipo_comando(char* commandArray)
 {
-    if(comando != NULL)
+    if(commandArray != NULL)
     {
-        if(strncmp("cd", comando, 2))
-            return CDM_CD;
-        if(strncmp("mkdir", comando, 5))
-            return CDM_MKDIR;
-        if(strncmp("exit", comando, 5))
-            return CMD_EXIT;
+        if(strncmp("cd", commandArray, 2))
+            return command_e::cd;
+        else if(strncmp("ls", commandArray, 2))
+            return command_e::ls;
+        else if(strncmp("pwd", commandArray, 3))
+            return command_e::pwd;
+        else if(strncmp("mv", commandArray, 2))
+            return command_e::mv;
+        else if(strncmp("cp", commandArray, 2))
+            return command_e::cp;
+        else if(strncmp("mkdir", commandArray, 5))
+            return command_e::mkdir;
+        else if(strncmp("rmdir", commandArray, 5))
+            return command_e::rmdir;
+        else if(strncmp("rm", commandArray, 2))
+            return command_e::rm;
+        else if(strncmp("lls", commandArray, 3))
+            return command_e::lls;
+        else if(strncmp("lcd", commandArray, 3))
+            return command_e::lcd;
+        else if(strncmp("lpwd", commandArray, 4))
+            return command_e::lpwd;
+        else if(strncmp("upload", commandArray, 6))
+            return command_e::upload;
+        else if(strncmp("exit", commandArray, 4))
+            return command_e::exit;
+
     }
-    retur -1
+    return command_e::noCommand;
 }
 void Terminal::ejecuta_comando(comando_t* comando)
 {
@@ -101,8 +92,6 @@ void Terminal::ejecuta_comando(comando_t* comando)
 
 //MAIN//////////////////////////////////
 
-#include <iostream>
-#include "terminal.h"
 using namespace std;
 
 int main(){
