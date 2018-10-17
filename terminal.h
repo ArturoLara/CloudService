@@ -36,6 +36,7 @@ class Terminal{
 
 private:
 
+    std::string pwdRecursive(node_t node);
 
 
 public:
@@ -46,6 +47,10 @@ public:
     void lee_comando(comando_t* comando);
     void ejecuta_comando(comando_t comando);
     int get_tipo_comando(char* comando);
+    void ls();
+    void cd(command_t command);
+    void pwd();
+    void mkdir(command_t command);
 };
 
 #endif // TERMINAL_H
