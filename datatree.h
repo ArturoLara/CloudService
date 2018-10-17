@@ -20,7 +20,6 @@ public:
     node_t* findNode(unsigned int aIdNode);
     void updateNode(unsigned int aIdNode, std::string aNameNode, off_t size);
     void removeNode(unsigned int aIdNode);
-
     inline node_t* getActualDirectoryNode(){ return this->actualDirectoryNode; }
     inline void setActualDirectoryNode(node_t* node){ this->actualDirectoryNode = node; }
 

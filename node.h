@@ -20,14 +20,7 @@ struct node_t
         this->nameNode = nameNode;
         this->deepLevel = actualDeepLevel;
         this->directoryFlag = directory;
-        if(directory)
-        {
-            this->size = static_cast<off_t>(4096);
-        }
-        else
-        {
-            this->size = size;
-        }
+        this->size = size;
         time(&(this->lastChange));
     }
 

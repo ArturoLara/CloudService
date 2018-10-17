@@ -5,10 +5,6 @@
 
 #include "datatree.h"
 
-const int CMD_CD = 1;
-const int CMD_MKDIR = 2;
-const int CMD_EXIT = 3;
-
 enum command_e
 {
     noCommand,
@@ -51,6 +47,9 @@ public:
     void cd(command_t command);
     void pwd();
     void mkdir(command_t command);
+    void rmdir(command_t command);
+    void rm(command_t aCommand);
+    void upload(command_t aCommand);
 };
 
 #endif // TERMINAL_H

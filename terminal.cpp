@@ -9,26 +9,37 @@ Terminal::Terminal()
     tree = new DataTree();
 }
 
-void Terminal::cd(command_t command){
+void Terminal::cd(command_t aCommand){
 
-    if(strncmp("..", command.args[0], 2))
+    if(strncmp("..", aCommand.args[0], 2))
     {
         node_t* node = this->tree->getActualDirectoryNode()->fatherNode;
         this->tree->setActualDirectoryNode(node);
+        completeFlag = true;
     }
-    else if(strncmp("/", command.args[0], 1))
+    else if(strncmp("/", aCommand.args[0], 1))
     {
         this->tree->setActualDirectoryNode(tree->findNode(0));
+        completeFlag = true;
     }
     else
     {
+        bool completeFlag = false;
         for(node_t* node : this->tree->getActualDirectoryNode()->childNodes)
         {
             if(strncmp(command.args[0] , node->nameNode.c_str(), node->nameNode.size()))
             {
-                this->tree->setActualDirectoryNode(node);
-                break;
+                if(node->directoryFlag)
+                {
+                    this->tree->setActualDirectoryNode(node);
+                    completeFlag = true;
+                    break;
+                }
             }
+        }
+        if(!completeFlag)
+        {
+            std::cout << "It's not a directory" << std::endl;
         }
     }
 }
@@ -51,7 +62,7 @@ void Terminal::ls(){
     std::endl;
 }
 
-std::string Terminal::pwdRecursive(node_t node){
+std::string Terminal::pwdRecursive(node_t aNode){
 
     std::string directory;
     std::string name = node.nameNode;
@@ -69,11 +80,79 @@ void Terminal::pwd(){
     std::cout << std::endl << pwdRecursive(this->tree->getActualDirectoryNode()) << std::endl;
 }
 
-/*
-void Terminal::mkdir(command_t command){
-    command.args[1].
+
+void Terminal::mkdir(command_t aCommand){
+
+    std::string nameOfDir(aCommand.args[0]);
+    tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
 }
-*/
+
+void Terminal::rmdir(command_t aCommand){
+    std::string dirToRemove(aCommand.args[0]);
+    node_t nodeToRemove = NULL;
+    int index;
+
+    for(index = 0; index < nodeToRemove.fatherNode->childNodes.size(); index++)
+    {
+        node_t* node = nodeToRemove.fatherNode->childNodes.at(index);
+        if(dirToRemove == node->nameNode)
+        {
+            nodeToRemove = node;
+            break;
+        }
+    }
+
+    if( nodeToRemove != NULL)
+    {
+        if(nodeToRemove.childNodes.size() > 0)
+        {
+            std::cout << "The directory is not empty: Can't be removed" << std::endl;
+        }
+        else
+        {
+            tree->getActualDirectoryNode().childNodes.erase(index);
+            delete(nodeToRemove);
+        }
+    }
+    else
+    {
+        std::cout << "This directory doesn't exist" << std::endl;
+    }
+}
+
+void Terminal::rm(command_t aCommand)
+{
+    std::string dirToRemove(aCommand.args[0]);
+    node_t nodeToRemove = NULL;
+    int index;
+
+    for(index = 0; index < nodeToRemove.fatherNode->childNodes.size(); index++)
+    {
+        node_t* node = nodeToRemove.fatherNode->childNodes.at(index);
+        if(dirToRemove == node->nameNode)
+        {
+            nodeToRemove = node;
+            break;
+        }
+    }
+
+    if( nodeToRemove != NULL)
+    {
+        tree->getActualDirectoryNode().childNodes.erase(index);
+        delete(nodeToRemove);
+    }
+    else
+    {
+        std::cout << "This file doesn't exist" << std::endl;
+    }
+}
+
+void Terminal::upload(command_t aCommand)
+{
+    //TODO: No se si debe subir archivos y directorios del sistema local o puede crear archivos (touch) en el remoto con esto
+    // y en el caso de subir un directorio, creará el directorio y luego nodos
+}
+
 void Terminal::run(){
     bool exit=false;
     command_t command;
@@ -84,58 +163,58 @@ void Terminal::run(){
         ejecuta_comando(&command);
     }
 }
-void Terminal::lee_comando(command_t* command){
+void Terminal::lee_comando(command_t* aCommand){
     char* line=new char [1024];
     char spacer[2]=" ";
     char* token=NULL;
 
     fgets(line, 1023, stdin);
     token=strtok(line, spacer);
-    command->type=get_tipo_comando(token);
+    aCommand->type=get_tipo_comando(token);
 
     while(token!=NULL){
         token=strtok(NULL, spacer);
-        command->args->push_back(token);
+        aCommand->args->push_back(token);
     }
 }
 
-command_e Terminal::get_tipo_comando(char* commandArray)
+command_e Terminal::get_tipo_comando(char* aCommandArray)
 {
     if(commandArray != NULL)
     {
-        if(strncmp("cd", commandArray, 2))
+        if(strncmp("cd", aCommandArray, 2))
             return command_e::cd;
-        else if(strncmp("ls", commandArray, 2))
+        else if(strncmp("ls", aCommandArray, 2))
             return command_e::ls;
-        else if(strncmp("pwd", commandArray, 3))
+        else if(strncmp("pwd", aCommandArray, 3))
             return command_e::pwd;
-        else if(strncmp("mv", commandArray, 2))
+        else if(strncmp("mv", aCommandArray, 2))
             return command_e::mv;
-        else if(strncmp("cp", commandArray, 2))
+        else if(strncmp("cp", aCommandArray, 2))
             return command_e::cp;
-        else if(strncmp("mkdir", commandArray, 5))
+        else if(strncmp("mkdir", aCommandArray, 5))
             return command_e::mkdir;
-        else if(strncmp("rmdir", commandArray, 5))
+        else if(strncmp("rmdir", aCommandArray, 5))
             return command_e::rmdir;
-        else if(strncmp("rm", commandArray, 2))
+        else if(strncmp("rm", aCommandArray, 2))
             return command_e::rm;
-        else if(strncmp("lls", commandArray, 3))
+        else if(strncmp("lls", aCommandArray, 3))
             return command_e::lls;
-        else if(strncmp("lcd", commandArray, 3))
+        else if(strncmp("lcd", aCommandArray, 3))
             return command_e::lcd;
-        else if(strncmp("lpwd", commandArray, 4))
+        else if(strncmp("lpwd", aCommandArray, 4))
             return command_e::lpwd;
-        else if(strncmp("upload", commandArray, 6))
+        else if(strncmp("upload", aCommandArray, 6))
             return command_e::upload;
-        else if(strncmp("exit", commandArray, 4))
+        else if(strncmp("exit", aCommandArray, 4))
             return command_e::exit;
 
     }
     return command_e::noCommand;
 }
-void Terminal::ejecuta_comando(command_t* command)
+void Terminal::ejecuta_comando(command_t* aCommand)
 {
-    switch(command->type)
+    switch(aCommand->type)
     {
         case command_e::cd:
             break;
