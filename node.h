@@ -13,7 +13,7 @@ struct node_t
     off_t size;
     time_t lastChange;
 
-    void node_t(unsigned int id, node_t* fatherNode, std::string nameNode, unsigned int actualDeepLevel, bool directory, off_t size)
+    node_t(unsigned int id, node_t* fatherNode, std::string nameNode, unsigned int actualDeepLevel, bool directory, off_t size)
     {
         this->id = id;
         this->fatherNode = fatherNode;

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <cstring>
 
 Terminal::Terminal()
@@ -11,23 +12,23 @@ Terminal::Terminal()
 
 void Terminal::cd(command_t aCommand){
 
-    if(strncmp("..", aCommand.args[0], 2))
+    bool completeFlag = false;
+    if(strncmp("..", aCommand.args->at(0), 2))
     {
         node_t* node = this->tree->getActualDirectoryNode()->fatherNode;
         this->tree->setActualDirectoryNode(node);
         completeFlag = true;
     }
-    else if(strncmp("/", aCommand.args[0], 1))
+    else if(strncmp("/", aCommand.args->at(0), 1))
     {
         this->tree->setActualDirectoryNode(tree->findNode(0));
         completeFlag = true;
     }
     else
     {
-        bool completeFlag = false;
         for(node_t* node : this->tree->getActualDirectoryNode()->childNodes)
         {
-            if(strncmp(command.args[0] , node->nameNode.c_str(), node->nameNode.size()))
+            if(strncmp(aCommand.args->at(0) , node->nameNode.c_str(), node->nameNode.size()))
             {
                 if(node->directoryFlag)
                 {
@@ -59,16 +60,16 @@ void Terminal::ls(){
         }
         std::cout << node->size << "Bytes " << node->lastChange << std::endl;
     }
-    std::endl;
+    std::cout << std::endl;
 }
 
-std::string Terminal::pwdRecursive(node_t aNode){
+std::string Terminal::pwdRecursive(node_t* aNode){
 
     std::string directory;
-    std::string name = node.nameNode;
-    if(node.fatherNode != NULL)
+    std::string name = aNode->nameNode;
+    if(aNode->fatherNode != NULL)
     {
-        directory = pwdRecursive(node.fatherNode);
+        directory = pwdRecursive(aNode->fatherNode);
     }
     directory += "/";
     directory += name;
@@ -83,18 +84,18 @@ void Terminal::pwd(){
 
 void Terminal::mkdir(command_t aCommand){
 
-    std::string nameOfDir(aCommand.args[0]);
+    std::string nameOfDir(aCommand.args->at(0));
     tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
 }
 
 void Terminal::rmdir(command_t aCommand){
-    std::string dirToRemove(aCommand.args[0]);
-    node_t nodeToRemove = NULL;
+    std::string dirToRemove(aCommand.args->at(0));
+    node_t* nodeToRemove = NULL;
     int index;
 
-    for(index = 0; index < nodeToRemove.fatherNode->childNodes.size(); index++)
+    for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
     {
-        node_t* node = nodeToRemove.fatherNode->childNodes.at(index);
+        node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
         if(dirToRemove == node->nameNode)
         {
             nodeToRemove = node;
@@ -104,7 +105,7 @@ void Terminal::rmdir(command_t aCommand){
 
     if( nodeToRemove != NULL)
     {
-        if(nodeToRemove.childNodes.size() > 0)
+        if(nodeToRemove->childNodes.size() > 0)
         {
             std::cout << "The directory is not empty: Can't be removed" << std::endl;
         }
@@ -121,13 +122,13 @@ void Terminal::rmdir(command_t aCommand){
 
 void Terminal::rm(command_t aCommand)
 {
-    std::string dirToRemove(aCommand.args[0]);
-    node_t nodeToRemove = NULL;
+    std::string dirToRemove(aCommand.args->at(0));
+    node_t* nodeToRemove = NULL;
     int index;
 
-    for(index = 0; index < nodeToRemove.fatherNode->childNodes.size(); index++)
+    for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
     {
-        node_t* node = nodeToRemove.fatherNode->childNodes.at(index);
+        node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
         if(dirToRemove == node->nameNode)
         {
             nodeToRemove = node;
@@ -153,12 +154,12 @@ void Terminal::upload(command_t aCommand)
 
 void Terminal::mv(command_t aCommand)
 {
-    std::string nodeNameOrig(aCommand.args[0]);
-    std::string nodeNameDest(aCommand.args[1]);
+    std::string nodeNameOrig(aCommand.args->at(0));
+    std::string nodeNameDest(aCommand.args->at(1));
 
-   node_t targetNode = NULL;
+   node_t* targetNode = NULL;
 
-    for(index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
+    for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
     {
         node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
         if(nodeNameOrig == node->nameNode)
@@ -170,7 +171,7 @@ void Terminal::mv(command_t aCommand)
 
     if(targetNode != NULL)
     {
-        tree->updateNode(targetNode.id, nodeNameDest, targetNode.size);
+        tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
     }
     else
     {
@@ -181,18 +182,17 @@ void Terminal::mv(command_t aCommand)
 
 void Terminal::cp(command_t aCommand)
 {
-    std::string nodeNameOrigin(aCommand.args[0]);
-    std::string pathNodoDestino(aCommand.args[1]);
+    std::string nodeNameOrigin(aCommand.args->at(0));
 
     char spacer[2]="/";
     char* token=NULL;
 
-    fgets(line, 1023, stdin);
-    token=strtok(line, spacer);
+    //get node names of all path
+    token=strtok(aCommand.args->at(1), spacer);
 
     while(token!=NULL){
         token=strtok(NULL, spacer);
-        aCommand->args->push_back(token);
+        aCommand.args->push_back(token);
     }
 }
 
@@ -203,7 +203,9 @@ void Terminal::lls()
 
 void Terminal::lcd(command_t aCommand)
 {
-    std::string commandLine = "cd " + aCommand.args[1];
+    std::string commandLine = "cd ";
+    std::string args(aCommand.args->at(0));
+    commandLine += args;
     system(commandLine.c_str());
 }
 
@@ -215,21 +217,21 @@ void Terminal::lpwd()
 void Terminal::run(){
     bool exit=false;
     command_t command;
-    command.args= new vector<char*>();
+    command.args = new std::vector<char*>();
     while(!exit){
         std::cout << "$: ";
-        lee_comando(&command);
-        ejecuta_comando(&command);
+        readCommand(&command);
+        runCommand(command);
     }
 }
-void Terminal::lee_comando(command_t* aCommand){
+void Terminal::readCommand(command_t* aCommand){
     char* line=new char [1024];
     char spacer[2]=" ";
     char* token=NULL;
 
     fgets(line, 1023, stdin);
     token=strtok(line, spacer);
-    aCommand->type=get_tipo_comando(token);
+    aCommand->type=getTypeOfCommand(token);
 
     while(token!=NULL){
         token=strtok(NULL, spacer);
@@ -237,9 +239,9 @@ void Terminal::lee_comando(command_t* aCommand){
     }
 }
 
-command_e Terminal::get_tipo_comando(char* aCommandArray)
+command_e Terminal::getTypeOfCommand(char* aCommandArray)
 {
-    if(commandArray != NULL)
+    if(aCommandArray != NULL)
     {
         if(strncmp("cd", aCommandArray, 2))
             return command_e::cd;
@@ -266,14 +268,14 @@ command_e Terminal::get_tipo_comando(char* aCommandArray)
         else if(strncmp("upload", aCommandArray, 6))
             return command_e::upload;
         else if(strncmp("exit", aCommandArray, 4))
-            return command_e::exit;
+            return command_e::end;
 
     }
     return command_e::noCommand;
 }
-void Terminal::ejecuta_comando(command_t* aCommand)
+void Terminal::runCommand(command_t aCommand)
 {
-    switch(aCommand->type)
+    switch(aCommand.type)
     {
         case command_e::cd:
             break;
@@ -299,7 +301,7 @@ void Terminal::ejecuta_comando(command_t* aCommand)
             break;
         case command_e::upload:
             break;
-        case command_e::exit:
+        case command_e::end:
             break;
         case command_e::noCommand:
             std::cout << "Command not found" << std::endl;

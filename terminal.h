@@ -20,19 +20,19 @@ enum command_e
     lcd,
     lpwd,
     upload,
-    exit
+    end
 };
 
 typedef struct command_t{
     command_e type;
-    std::vector<char*> args;
+    std::vector<char*>* args;
 }command_t;
 
 class Terminal{
 
 private:
 
-    std::string pwdRecursive(node_t node);
+    std::string pwdRecursive(node_t* node);
 
 
 public:
@@ -40,9 +40,9 @@ public:
     DataTree* tree;
     Terminal();
     void run();
-    void lee_comando(comando_t* comando);
-    void ejecuta_comando(comando_t comando);
-    int get_tipo_comando(char* comando);
+    void readCommand(command_t* comando);
+    void runCommand(command_t comando);
+    command_e getTypeOfCommand(char* comando);
     void ls();
     void cd(command_t command);
     void pwd();

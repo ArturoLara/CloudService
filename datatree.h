@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "sys/stat.h>
+#include <sys/stat.h>
 
 #include "node.h"
 
@@ -19,7 +19,7 @@ public:
     void addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize);
     node_t* findNode(unsigned int aIdNode);
     void updateNode(unsigned int aIdNode, std::string aNameNode, off_t size);
-    void removeNode(unsigned int aIdNode);
+    void removeNode(node_t* aIdNode);
     inline node_t* getActualDirectoryNode(){ return this->actualDirectoryNode; }
     inline void setActualDirectoryNode(node_t* node){ this->actualDirectoryNode = node; }
 
