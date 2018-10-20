@@ -29,7 +29,7 @@ private:
     unsigned int nodeCount;
     unsigned int lastIdNode;
 
-    node_t* findNodeRecursive(unsigned int aIdNode, node_t rootNode);
+    node_t* findNodeRecursive(unsigned int aIdNode, node_t* rootNode);
 };
 
 #endif // DATATREE_H

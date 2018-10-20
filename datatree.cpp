@@ -1,5 +1,7 @@
 #include "datatree.h"
 
+#include <algorithm>
+
 DataTree::DataTree()
 {
     node_t* aRootNode = new node_t(INITIAL_NODE_ID, NULL, "root", INITIAL_DEEP_LEVEL, true, SIZE_OF_DIRECTORY);
@@ -18,17 +20,17 @@ void DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirecto
     nodeCount += 1;
 }
 
-node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t rootNode)
+node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t* rootNode)
 {
     node_t* foundNode = NULL;
 
-    if(rootNode.id == aIdNode)
+    if(rootNode->id == aIdNode)
     {
         foundNode = rootNode;
     }
     else
     {
-        for(node_t node : rootNode.childNodes)
+        for(node_t* node : rootNode->childNodes)
         {
             foundNode = findNodeRecursive(aIdNode, node);
             if(foundNode != NULL)
@@ -43,7 +45,7 @@ node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t rootNode)
 
 node_t* DataTree::findNode(unsigned int aIdNode)
 {
-    findNodeRecursive(aIdNode, rootNode);
+    return findNodeRecursive(aIdNode, rootNode);
 }
 
 void DataTree::updateNode(unsigned int aIdNode, std::string aNameNode, off_t aSize)
@@ -57,10 +59,9 @@ void DataTree::updateNode(unsigned int aIdNode, std::string aNameNode, off_t aSi
 void DataTree::removeNode(node_t* nodeToRemove)
 {
     auto it = std::find(actualDirectoryNode->childNodes.begin(), actualDirectoryNode->childNodes.end(), nodeToRemove);
-    if (it != Names.end())
+    if (it != actualDirectoryNode->childNodes.end())
     {
-      auto index = std::distance(Names.begin(), it);
-      actualDirectoryNode->childNodes.erase(index);
+      actualDirectoryNode->childNodes.erase(it);
     }
     delete(nodeToRemove);
 }

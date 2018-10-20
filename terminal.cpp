@@ -198,7 +198,9 @@ void Terminal::cp(command_t aCommand)
 
 void Terminal::lls()
 {
-    system("ls");
+    std::cout << "pre" << std::endl;
+    std::cout << system("ls") << std::endl;
+    std::cout << "post" << std::endl;
 }
 
 void Terminal::lcd(command_t aCommand)
@@ -215,7 +217,6 @@ void Terminal::lpwd()
 }
 
 void Terminal::run(){
-    bool exit=false;
     command_t command;
     command.args = new std::vector<char*>();
     while(!exit){
@@ -228,7 +229,7 @@ void Terminal::readCommand(command_t* aCommand){
     char* line=new char [1024];
     char spacer[2]=" ";
     char* token=NULL;
-
+    std::cout << "En Lectura de comando" << std::endl;
     fgets(line, 1023, stdin);
     token=strtok(line, spacer);
     aCommand->type=getTypeOfCommand(token);
@@ -241,6 +242,7 @@ void Terminal::readCommand(command_t* aCommand){
 
 command_e Terminal::getTypeOfCommand(char* aCommandArray)
 {
+    std::cout << "Obteniendo tipo de comando..." << std::endl;
     if(aCommandArray != NULL)
     {
         if(strncmp("cd", aCommandArray, 2))
@@ -275,33 +277,48 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
 }
 void Terminal::runCommand(command_t aCommand)
 {
-    switch(aCommand.type)
+    std::cout << "ejecutando commando..." << std::endl;
+    command_e test = NO_COMMAND;
+    switch(test)
     {
         case command_e::CD:
+            cd(aCommand);
             break;
         case command_e::LS:
+            ls();
             break;
         case command_e::PWD:
+            pwd();
             break;
         case command_e::MV:
+            mv(aCommand);
             break;
         case command_e::CP:
+            cp(aCommand);
             break;
         case command_e::MKDIR:
+            mkdir(aCommand);
             break;
         case command_e::RMDIR:
+            rmdir(aCommand);
             break;
         case command_e::RM:
+            rm(aCommand);
             break;
         case command_e::LLS:
+            lls();
             break;
         case command_e::LCD:
+            lcd(aCommand);
             break;
         case command_e::LPWD:
+            lpwd();
             break;
         case command_e::UPLOAD:
+            upload(aCommand);
             break;
         case command_e::END:
+            exit = true;
             break;
         case command_e::NO_COMMAND:
             std::cout << "Command not found" << std::endl;
@@ -310,12 +327,4 @@ void Terminal::runCommand(command_t aCommand)
             std::cout << "Command not found" << std::endl;
             break;
     }
-}
-
-//MAIN//////////////////////////////////
-
-int main(){
-    Terminal* term=new Terminal();
-    term->run();
-    return 0;
 }

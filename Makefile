@@ -5,6 +5,10 @@ CFLAGS=-g -DDEBUG
 LDLIBS=
 INCLUDE=-I. -I./include
 EXEC=prueba
+OBJS=datatree.o terminal.o
 
-all:
-	$(CC) $(CFLAGS) $(INCLUDE) $(LDLIBS) terminal.cpp -o $(EXEC)
+all: $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDE) $(LDLIBS) $(OBJS) main.cpp -o $(EXEC)
+#para cualquier .o que falte, busco sus cpp
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@

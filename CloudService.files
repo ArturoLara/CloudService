@@ -1,4 +1,5 @@
 Makefile
+main.cpp
 terminal.h
 README.md
 datatree.cpp

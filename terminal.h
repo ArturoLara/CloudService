@@ -7,20 +7,20 @@
 
 enum command_e
 {
-    NO_COMMAND,
-    CD,
-    LS,
-    PWD,
-    MV,
-    CP,
-    MKDIR,
-    RMDIR,
-    RM,
-    LLS,
-    LCD,
-    LPWD,
-    UPLOAD,
-    END
+    NO_COMMAND = 0,
+    CD = 1,
+    LS = 2,
+    PWD = 3,
+    MV = 4,
+    CP = 5,
+    MKDIR = 6,
+    RMDIR = 7,
+    RM = 8,
+    LLS = 9,
+    LCD = 10,
+    LPWD = 11,
+    UPLOAD = 12,
+    END = 13
 };
 
 typedef struct command_t{
@@ -32,8 +32,8 @@ class Terminal{
 
 private:
     DataTree* tree;
+    bool exit=false;
     std::string pwdRecursive(node_t* node);
-
 
 public:
     Terminal();
