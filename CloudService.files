@@ -1,3 +1,4 @@
+Makefile
 terminal.h
 README.md
 datatree.cpp

@@ -21,7 +21,7 @@ void Terminal::cd(command_t aCommand){
     }
     else if(strncmp("/", aCommand.args->at(0), 1))
     {
-        this->tree->setActualDirectoryNode(tree->findNode(0));
+        tree->setActualDirectoryNode(tree->findNode(0));
         completeFlag = true;
     }
     else
@@ -244,66 +244,66 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
     if(aCommandArray != NULL)
     {
         if(strncmp("cd", aCommandArray, 2))
-            return command_e::cd;
+            return command_e::CD;
         else if(strncmp("ls", aCommandArray, 2))
-            return command_e::ls;
+            return command_e::LS;
         else if(strncmp("pwd", aCommandArray, 3))
-            return command_e::pwd;
+            return command_e::PWD;
         else if(strncmp("mv", aCommandArray, 2))
-            return command_e::mv;
+            return command_e::MV;
         else if(strncmp("cp", aCommandArray, 2))
-            return command_e::cp;
+            return command_e::CP;
         else if(strncmp("mkdir", aCommandArray, 5))
-            return command_e::mkdir;
+            return command_e::MKDIR;
         else if(strncmp("rmdir", aCommandArray, 5))
-            return command_e::rmdir;
+            return command_e::RMDIR;
         else if(strncmp("rm", aCommandArray, 2))
-            return command_e::rm;
+            return command_e::RM;
         else if(strncmp("lls", aCommandArray, 3))
-            return command_e::lls;
+            return command_e::LLS;
         else if(strncmp("lcd", aCommandArray, 3))
-            return command_e::lcd;
+            return command_e::LCD;
         else if(strncmp("lpwd", aCommandArray, 4))
-            return command_e::lpwd;
+            return command_e::LPWD;
         else if(strncmp("upload", aCommandArray, 6))
-            return command_e::upload;
+            return command_e::UPLOAD;
         else if(strncmp("exit", aCommandArray, 4))
-            return command_e::end;
+            return command_e::END;
 
     }
-    return command_e::noCommand;
+    return command_e::NO_COMMAND;
 }
 void Terminal::runCommand(command_t aCommand)
 {
     switch(aCommand.type)
     {
-        case command_e::cd:
+        case command_e::CD:
             break;
-        case command_e::ls:
+        case command_e::LS:
             break;
-        case command_e::pwd:
+        case command_e::PWD:
             break;
-        case command_e::mv:
+        case command_e::MV:
             break;
-        case command_e::cp:
+        case command_e::CP:
             break;
-        case command_e::mkdir:
+        case command_e::MKDIR:
             break;
-        case command_e::rmdir:
+        case command_e::RMDIR:
             break;
-        case command_e::rm:
+        case command_e::RM:
             break;
-        case command_e::lls:
+        case command_e::LLS:
             break;
-        case command_e::lcd:
+        case command_e::LCD:
             break;
-        case command_e::lpwd:
+        case command_e::LPWD:
             break;
-        case command_e::upload:
+        case command_e::UPLOAD:
             break;
-        case command_e::end:
+        case command_e::END:
             break;
-        case command_e::noCommand:
+        case command_e::NO_COMMAND:
             std::cout << "Command not found" << std::endl;
             break;
         default:
