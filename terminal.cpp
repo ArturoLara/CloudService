@@ -110,8 +110,7 @@ void Terminal::rmdir(command_t aCommand){
         }
         else
         {
-            tree->getActualDirectoryNode().childNodes.erase(index);
-            delete(nodeToRemove);
+            tree->removeNode(nodeToRemove);
         }
     }
     else
@@ -138,8 +137,7 @@ void Terminal::rm(command_t aCommand)
 
     if( nodeToRemove != NULL)
     {
-        tree->getActualDirectoryNode().childNodes.erase(index);
-        delete(nodeToRemove);
+        tree->removeNode(nodeToRemove);
     }
     else
     {
@@ -151,6 +149,67 @@ void Terminal::upload(command_t aCommand)
 {
     //TODO: No se si debe subir archivos y directorios del sistema local o puede crear archivos (touch) en el remoto con esto
     // y en el caso de subir un directorio, creará el directorio y luego nodos
+}
+
+void Terminal::mv(command_t aCommand)
+{
+    std::string nodeNameOrig(aCommand.args[0]);
+    std::string nodeNameDest(aCommand.args[1]);
+
+   node_t targetNode = NULL;
+
+    for(index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
+    {
+        node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
+        if(nodeNameOrig == node->nameNode)
+        {
+            targetNode = node;
+            break;
+        }
+    }
+
+    if(targetNode != NULL)
+    {
+        tree->updateNode(targetNode.id, nodeNameDest, targetNode.size);
+    }
+    else
+    {
+        std::cout << "This file or directory doesn't exist" << std::endl;
+    }
+
+}
+
+void Terminal::cp(command_t aCommand)
+{
+    std::string nodeNameOrigin(aCommand.args[0]);
+    std::string pathNodoDestino(aCommand.args[1]);
+
+    char spacer[2]="/";
+    char* token=NULL;
+
+    fgets(line, 1023, stdin);
+    token=strtok(line, spacer);
+
+    while(token!=NULL){
+        token=strtok(NULL, spacer);
+        aCommand->args->push_back(token);
+    }
+}
+
+void Terminal::lls()
+{
+    system("ls");
+}
+
+void Terminal::lcd(command_t aCommand)
+{
+    std::string commandLine = "cd " + aCommand.args[1];
+    system(commandLine.c_str());
+}
+
+void Terminal::lpwd()
+{
+    system("pwd");
 }
 
 void Terminal::run(){

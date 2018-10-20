@@ -50,6 +50,11 @@ public:
     void rmdir(command_t command);
     void rm(command_t aCommand);
     void upload(command_t aCommand);
+    void mv(command_t aCommand);
+    void cp(command_t aCommand);
+    void lls();
+    void lcd(command_t aCommand);
+    void lpwd();
 };
 
 #endif // TERMINAL_H

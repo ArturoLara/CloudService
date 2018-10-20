@@ -56,5 +56,11 @@ void DataTree::updateNode(unsigned int aIdNode, std::string aNameNode, off_t aSi
 
 void DataTree::removeNode(node_t* nodeToRemove)
 {
+    auto it = std::find(actualDirectoryNode->childNodes.begin(), actualDirectoryNode->childNodes.end(), nodeToRemove);
+    if (it != Names.end())
+    {
+      auto index = std::distance(Names.begin(), it);
+      actualDirectoryNode->childNodes.erase(index);
+    }
     delete(nodeToRemove);
 }
