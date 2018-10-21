@@ -26,6 +26,12 @@ enum command_e
 typedef struct command_t{
     command_e type;
     std::vector<char*>* args;
+
+    void clean()
+    {
+        type = command_e::NO_COMMAND;
+        args->clear();
+    }
 }command_t;
 
 class Terminal{

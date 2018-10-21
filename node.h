@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <string>
+#include <vector>
 
 struct node_t
 {

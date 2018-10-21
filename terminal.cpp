@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstring>
+#include <unistd.h>
 
 Terminal::Terminal()
 {
@@ -11,37 +12,49 @@ Terminal::Terminal()
 }
 
 void Terminal::cd(command_t aCommand){
-
-    bool completeFlag = false;
-    if(strncmp("..", aCommand.args->at(0), 2))
+    if(aCommand.args->size() == 2)
     {
-        node_t* node = this->tree->getActualDirectoryNode()->fatherNode;
-        this->tree->setActualDirectoryNode(node);
-        completeFlag = true;
-    }
-    else if(strncmp("/", aCommand.args->at(0), 1))
-    {
-        tree->setActualDirectoryNode(tree->findNode(0));
-        completeFlag = true;
+        bool completeFlag = false;
+        if(!strncmp("..", aCommand.args->at(0), 2))
+        {
+            node_t* node = this->tree->getActualDirectoryNode()->fatherNode;
+            if(node != NULL)
+            {
+                this->tree->setActualDirectoryNode(node);
+                completeFlag = true;
+            }
+        }
+        else if(!strncmp("/", aCommand.args->at(0), 1))
+        {
+            tree->setActualDirectoryNode(tree->findNode(0));
+            completeFlag = true;
+        }
+        else
+        {
+            for(node_t* node : this->tree->getActualDirectoryNode()->childNodes)
+            {
+                if(strlen(aCommand.args->at(0)) == node->nameNode.size())
+                {
+                    if(!strncmp(aCommand.args->at(0) , node->nameNode.c_str(), node->nameNode.size()))
+                    {
+                        if(node->directoryFlag)
+                        {
+                            this->tree->setActualDirectoryNode(node);
+                            completeFlag = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(!completeFlag)
+            {
+                std::cout << "It's not a directory" << std::endl;
+            }
+        }
     }
     else
     {
-        for(node_t* node : this->tree->getActualDirectoryNode()->childNodes)
-        {
-            if(strncmp(aCommand.args->at(0) , node->nameNode.c_str(), node->nameNode.size()))
-            {
-                if(node->directoryFlag)
-                {
-                    this->tree->setActualDirectoryNode(node);
-                    completeFlag = true;
-                    break;
-                }
-            }
-        }
-        if(!completeFlag)
-        {
-            std::cout << "It's not a directory" << std::endl;
-        }
+        std::cout << "Invalid number of arguments" << std::endl;
     }
 }
 
@@ -58,7 +71,8 @@ void Terminal::ls(){
         {
             std::cout << "(file) ";
         }
-        std::cout << node->size << "Bytes " << node->lastChange << std::endl;
+        tm* timeinfo = localtime (&node->lastChange);
+        std::cout << node->size << "Bytes " << asctime(timeinfo) << std::endl;
     }
     std::cout << std::endl;
 }
@@ -83,62 +97,93 @@ void Terminal::pwd(){
 
 
 void Terminal::mkdir(command_t aCommand){
-
-    std::string nameOfDir(aCommand.args->at(0));
-    tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
-}
-
-void Terminal::rmdir(command_t aCommand){
-    std::string dirToRemove(aCommand.args->at(0));
-    node_t* nodeToRemove = NULL;
-    int index;
-
-    for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
+    if(aCommand.args->size() == 2)
     {
-        node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
-        if(dirToRemove == node->nameNode)
+        std::string nameOfDir(aCommand.args->at(0));
+        if(std::string::npos == nameOfDir.find("/"))
         {
-            nodeToRemove = node;
-            break;
-        }
-    }
-
-    if( nodeToRemove != NULL)
-    {
-        if(nodeToRemove->childNodes.size() > 0)
-        {
-            std::cout << "The directory is not empty: Can't be removed" << std::endl;
+            tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
         }
         else
         {
-            tree->removeNode(nodeToRemove);
+            std::cout << "You can not use \"/\"" << std::endl;
         }
     }
     else
     {
-        std::cout << "This directory doesn't exist" << std::endl;
+        std::cout << "Invalid number of arguments" << std::endl;
+    }
+
+}
+
+void Terminal::rmdir(command_t aCommand){
+    if(aCommand.args->size() == 2)
+    {
+        std::string dirToRemove(aCommand.args->at(0));
+
+        node_t* nodeToRemove = NULL;
+        int index;
+        for(index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
+        {
+            node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
+            if(dirToRemove == node->nameNode)
+            {
+                if(node->directoryFlag)
+                {
+                    nodeToRemove = node;
+                }
+                break;
+            }
+        }
+
+        if( nodeToRemove != NULL)
+        {
+            if(nodeToRemove->childNodes.size() > 0)
+            {
+                std::cout << "The directory is not empty: Can't be removed" << std::endl;
+            }
+            else
+            {
+                tree->removeNode(nodeToRemove);
+            }
+        }
+        else
+        {
+            std::cout << "This directory doesn't exist or is a file" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Invalid number of arguments" << std::endl;
     }
 }
 
 void Terminal::rm(command_t aCommand)
 {
-    std::string dirToRemove(aCommand.args->at(0));
-    node_t* nodeToRemove = NULL;
-    int index;
-
-    for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
+    if(aCommand.args->size() == 2)
     {
-        node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
-        if(dirToRemove == node->nameNode)
+        std::string dirToRemove(aCommand.args->at(0));
+        node_t* nodeToRemove = NULL;
+        int index;
+
+        for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
         {
-            nodeToRemove = node;
-            break;
+            node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
+            if(dirToRemove == node->nameNode)
+            {
+                nodeToRemove = node;
+                break;
+            }
         }
-    }
 
-    if( nodeToRemove != NULL)
-    {
-        tree->removeNode(nodeToRemove);
+        if( nodeToRemove != NULL)
+        {
+            tree->removeNode(nodeToRemove);
+        }
+        else
+        {
+            std::cout << "This file doesn't exist" << std::endl;
+        }
     }
     else
     {
@@ -148,67 +193,90 @@ void Terminal::rm(command_t aCommand)
 
 void Terminal::upload(command_t aCommand)
 {
+    if(aCommand.args->size() == 2)
+    {
     //TODO: No se si debe subir archivos y directorios del sistema local o puede crear archivos (touch) en el remoto con esto
     // y en el caso de subir un directorio, creará el directorio y luego nodos
+    }
+    else
+    {
+        std::cout << "This file doesn't exist" << std::endl;
+    }
 }
 
 void Terminal::mv(command_t aCommand)
 {
-    std::string nodeNameOrig(aCommand.args->at(0));
-    std::string nodeNameDest(aCommand.args->at(1));
-
-   node_t* targetNode = NULL;
-
-    for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
+    if(aCommand.args->size() == 3)
     {
-        node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
-        if(nodeNameOrig == node->nameNode)
+        std::string nodeNameOrig(aCommand.args->at(0));
+        std::string nodeNameDest(aCommand.args->at(1));
+
+        node_t* targetNode = NULL;
+
+        for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
         {
-            targetNode = node;
-            break;
+            node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
+            if(nodeNameOrig == node->nameNode)
+            {
+                targetNode = node;
+                break;
+            }
         }
-    }
 
-    if(targetNode != NULL)
-    {
-        tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+        if(targetNode != NULL)
+        {
+            tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+        }
+        else
+        {
+            std::cout << "This file or directory doesn't exist" << std::endl;
+        }
     }
     else
     {
-        std::cout << "This file or directory doesn't exist" << std::endl;
+        std::cout << "Invalid number of arguments" << std::endl;
     }
-
 }
 
 void Terminal::cp(command_t aCommand)
 {
-    std::string nodeNameOrigin(aCommand.args->at(0));
+    if(aCommand.args->size() == 3)
+    {
+        std::string nodeNameOrigin(aCommand.args->at(0));
 
-    char spacer[2]="/";
-    char* token=NULL;
+        char spacer[2]="/";
+        char* token=NULL;
 
-    //get node names of all path
-    token=strtok(aCommand.args->at(1), spacer);
+        token=strtok(aCommand.args->at(1), spacer);
 
-    while(token!=NULL){
-        token=strtok(NULL, spacer);
-        aCommand.args->push_back(token);
+        while(token!=NULL){
+            token=strtok(NULL, spacer);
+            aCommand.args->push_back(token);
+        }
     }
+    else
+    {
+        std::cout << "Invalid number of arguments" << std::endl;
+    }
+
 }
 
 void Terminal::lls()
 {
-    std::cout << "pre" << std::endl;
-    std::cout << system("ls") << std::endl;
-    std::cout << "post" << std::endl;
+    system("ls");
 }
 
 void Terminal::lcd(command_t aCommand)
 {
-    std::string commandLine = "cd ";
-    std::string args(aCommand.args->at(0));
-    commandLine += args;
-    system(commandLine.c_str());
+    if(aCommand.args->size() == 2)
+    {
+        std::string args(aCommand.args->at(0));
+        chdir(args.c_str());
+    }
+    else
+    {
+        std::cout << "Invalid number of arguments" << std::endl;
+    }
 }
 
 void Terminal::lpwd()
@@ -220,16 +288,17 @@ void Terminal::run(){
     command_t command;
     command.args = new std::vector<char*>();
     while(!exit){
+        command.clean();
         std::cout << "$: ";
         readCommand(&command);
         runCommand(command);
     }
 }
 void Terminal::readCommand(command_t* aCommand){
-    char* line=new char [1024];
-    char spacer[2]=" ";
+    char * line= new char [1024];
+    char spacer[3]=" \n";
     char* token=NULL;
-    std::cout << "En Lectura de comando" << std::endl;
+
     fgets(line, 1023, stdin);
     token=strtok(line, spacer);
     aCommand->type=getTypeOfCommand(token);
@@ -242,44 +311,40 @@ void Terminal::readCommand(command_t* aCommand){
 
 command_e Terminal::getTypeOfCommand(char* aCommandArray)
 {
-    std::cout << "Obteniendo tipo de comando..." << std::endl;
     if(aCommandArray != NULL)
     {
-        if(strncmp("cd", aCommandArray, 2))
+        if(!strncmp("cd", aCommandArray, 2))
             return command_e::CD;
-        else if(strncmp("ls", aCommandArray, 2))
+        else if(!strncmp("ls", aCommandArray, 2))
             return command_e::LS;
-        else if(strncmp("pwd", aCommandArray, 3))
+        else if(!strncmp("pwd", aCommandArray, 3))
             return command_e::PWD;
-        else if(strncmp("mv", aCommandArray, 2))
+        else if(!strncmp("mv", aCommandArray, 2))
             return command_e::MV;
-        else if(strncmp("cp", aCommandArray, 2))
+        else if(!strncmp("cp", aCommandArray, 2))
             return command_e::CP;
-        else if(strncmp("mkdir", aCommandArray, 5))
+        else if(!strncmp("mkdir", aCommandArray, 5))
             return command_e::MKDIR;
-        else if(strncmp("rmdir", aCommandArray, 5))
+        else if(!strncmp("rmdir", aCommandArray, 5))
             return command_e::RMDIR;
-        else if(strncmp("rm", aCommandArray, 2))
+        else if(!strncmp("rm", aCommandArray, 2))
             return command_e::RM;
-        else if(strncmp("lls", aCommandArray, 3))
+        else if(!(strncmp("lls", aCommandArray, 3)))
             return command_e::LLS;
-        else if(strncmp("lcd", aCommandArray, 3))
+        else if(!strncmp("lcd", aCommandArray, 3))
             return command_e::LCD;
-        else if(strncmp("lpwd", aCommandArray, 4))
+        else if(!strncmp("lpwd", aCommandArray, 4))
             return command_e::LPWD;
-        else if(strncmp("upload", aCommandArray, 6))
+        else if(!strncmp("upload", aCommandArray, 6))
             return command_e::UPLOAD;
-        else if(strncmp("exit", aCommandArray, 4))
+        else if(!strncmp("exit", aCommandArray, 4))
             return command_e::END;
-
     }
     return command_e::NO_COMMAND;
 }
 void Terminal::runCommand(command_t aCommand)
 {
-    std::cout << "ejecutando commando..." << std::endl;
-    command_e test = NO_COMMAND;
-    switch(test)
+    switch(aCommand.type)
     {
         case command_e::CD:
             cd(aCommand);
