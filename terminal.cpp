@@ -258,10 +258,15 @@ void Terminal::cp(command_t aCommand)
         for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
         {
             node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
+            std::string nodeNameOrigin(path.args->at(0));
             if(nodeNameOrigin == node->nameNode)
             {
                 originNode = node;
                 break;
+            }
+            if(path == node->nameNode)
+            {
+                //recursive: follow the path to the last element "or create the directory path"( colud be a new file or a new directory) this can be use it to cd with path and mkdir with path
             }
         }
         if(originNode != NULL && destNode != NULL)
@@ -271,7 +276,7 @@ void Terminal::cp(command_t aCommand)
                 if(destNode->directoryFlag)
                 {
                     //directory -> directory
-
+                    //recursive: en profundidad, crea el nodo padre y si su hijo es un directorio crea su contenido, si no, sigue al siguiente nodo hijo del actual padre
                 }
                 else
                 {
@@ -283,10 +288,12 @@ void Terminal::cp(command_t aCommand)
                 if(destNode->directoryFlag)
                 {
                     //file -> directory
+                    tree->addNode(destNode, originNode->nameNode, false, originNode->size); //suponiendo que destNode sea el nodo final
                 }
                 else
                 {
                     //file -> file
+                    tree->addNode(destNode, originNode->nameNode, false, originNode->size); //suponiendo que destNode sea el nodo padre del final
                 }
             }
         }
