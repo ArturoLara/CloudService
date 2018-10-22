@@ -240,19 +240,69 @@ void Terminal::mv(command_t aCommand)
 
 void Terminal::cp(command_t aCommand)
 {
+
     if(aCommand.args->size() == 3)
     {
         std::string nodeNameOrigin(aCommand.args->at(0));
-
-        char spacer[2]="/";
+        node_t* originNode = NULL;
+        node_t* destNode = NULL;
+        std::vector<char*> path;
+        char spacer[2]="/\n";
         char* token=NULL;
 
-        token=strtok(aCommand.args->at(1), spacer);
+        do{
+            token=strtok(aCommand.args->at(1), spacer);
+            path.args->push_back(token);
+        }while(token!=NULL);
 
-        while(token!=NULL){
-            token=strtok(NULL, spacer);
-            aCommand.args->push_back(token);
+        for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
+        {
+            node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
+            if(nodeNameOrigin == node->nameNode)
+            {
+                originNode = node;
+                break;
+            }
         }
+        if(originNode != NULL && destNode != NULL)
+        {
+            if(originNode->directoryFlag)
+            {
+                if(destNode->directoryFlag)
+                {
+                    //directory -> directory
+
+                }
+                else
+                {
+                    std::cout << "Error: You can't copy a directory in a file" << std::endl;
+                }
+            }
+            else
+            {
+                if(destNode->directoryFlag)
+                {
+                    //file -> directory
+                }
+                else
+                {
+                    //file -> file
+                }
+            }
+        }
+        else
+        {
+           std::cout << "This file or directory doesn't exist" << std::endl;
+        }
+
+
+    //Cómo diferencio un directorio de un archivo en el último parámetro???
+
+
+
+
+
+
     }
     else
     {
