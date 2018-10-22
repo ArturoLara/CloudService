@@ -40,7 +40,8 @@ private:
     DataTree* tree;
     bool exit=false;
     std::string pwdRecursive(node_t* node);
-
+    node_t* findByPathRecursive(char* command, node_t actualDirectory, int index);
+    node_t* findByPath(char* command);
 public:
     Terminal();
     void run();
