@@ -105,13 +105,16 @@ void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirec
 }
 
 node_t* Terminal::findByPath(char *command){
-
+    std::cout << command+3<< std::endl;
+    std::cout << command << std::endl;
     bool dirFlag = false;
-    std::cout << command[strlen(command)]  << std::endl;
-    if(command[strlen(command)])
+    if(!strncmp(&(command[strlen(command)-1]), "/", 1))
+    {
+        dirFlag = true;
+    }
     if(!strncmp(&(command[0]), "/", 1))
     {
-        return findByPathRecursive(command, tree->findNode(0), 0, dirFlag);
+        return findByPathRecursive(command, tree->findNode(0), 1, dirFlag);
     }
     else
     {
@@ -121,30 +124,32 @@ node_t* Terminal::findByPath(char *command){
 }
 
 node_t* Terminal::findByPathRecursive(char *path, node_t* actualDirectory, int index, bool dirFlag){
-    std::cout << path[0] << " " << path[1] << " " << path[2] << " " << path[3] << " " << path[4] << " " << path[5] << " " << std::endl;
-    char* actualPath=strtok(path+index, "/");
-    std::string nextDir(actualPath);
-    node_t* targetDirectory = findDirectoryAtDirectory(actualDirectory, nextDir);
-    index += strlen(actualPath)+1;
-    char* nextPath = strtok(NULL , "/\n");
 
-    if(targetDirectory != NULL){
+
+    char* actualPath=strtok(path+index, "/\n");
+    char* nextPath = strtok(NULL , "/");
+
+    std::string nextDir(actualPath);
+
+    node_t* targetDirectory = findDirectoryAtDirectory(actualDirectory, nextDir);
+
+    index += strlen(actualPath)+1;
+
+    if(targetDirectory != NULL)
+    {
         if(nextPath != NULL)
         {
             return findByPathRecursive(path, targetDirectory, index, dirFlag);
         }
         else
         {
-
-
-            if(!strncmp(&(path[strlen(path)-1]), "/", 1))
+            if(dirFlag)
             {
-
                 return targetDirectory;
             }
             else
             {
-                return actualDirectory;
+                return targetDirectory;
             }
         }
     }
@@ -156,7 +161,7 @@ node_t* Terminal::findByPathRecursive(char *path, node_t* actualDirectory, int i
         }
         else
         {
-            if(!strncmp(&(path[strlen(path)-2]), "/", 1))
+            if(dirFlag)
             {
                 return NULL;
             }
@@ -338,24 +343,17 @@ void Terminal::cp(command_t aCommand)
         char* destName;
         node_t* originNode = NULL;
         node_t* destNode = NULL;
-        std::cout << "Antes de Buscar nodo local" << std::endl;
-        originNode = findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
-        std::cout << "Antes de buscar nodo DESTINO" << std::endl;
-        destNode = findByPath(aCommand.args->at(1));
-        if(destNode != NULL)
+        char* destPathCopy;
+        strcpy(destPathCopy, aCommand.args->at(1));
+        if(!strncmp(&(destPathCopy[strlen(destPathCopy)-1]), "/", 1))
         {
-            std::cout << "RETURN: " << destNode->nameNode << std::endl;
+            destNodeName = nodeNameOrigin;
         }
         else
         {
-            std::cout << "NULLL" << std::endl;
-        }
-
-        if(strncmp(&(aCommand.args->at(1)[strlen(aCommand.args->at(1))-1]), "/", 1))
-        {
             char* token;
 
-            token = strtok(aCommand.args->at(1), "/\n");
+            token = strtok(destPathCopy, "/\n");
             while(token != NULL)
             {
                 destName = token;
@@ -363,21 +361,18 @@ void Terminal::cp(command_t aCommand)
             }
             destNodeName = std::string(destName);
         }
-        else
-        {
-            destNodeName = nodeNameOrigin;
-        }
+        originNode = findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
+        destNode = findByPath(aCommand.args->at(1));
 
         if(originNode != NULL && destNode != NULL)
         {
+            std::cout << destNode->nameNode << std::endl;
             if(originNode->directoryFlag)
             {
                 if(destNode->directoryFlag)
                 {
                     //directory -> directory
-                    std::cout << "Antes de copiar directorios" << std::endl;
                     copyDirectoryRecursive(originNode, destNode, destNodeName);
-                    std::cout << "Despues de copiar directorios" << std::endl;
                 }
                 else
                 {
