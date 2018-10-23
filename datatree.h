@@ -15,7 +15,7 @@ class DataTree
 {
 public:
     DataTree();
-    void addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize);
+    node_t* addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize);
     node_t* findNode(unsigned int aIdNode);
     void updateNode(unsigned int aIdNode, std::string aNameNode, off_t size);
     void removeNode(node_t* aIdNode);

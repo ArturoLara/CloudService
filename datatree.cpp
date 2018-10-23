@@ -12,15 +12,14 @@ DataTree::DataTree()
     lastIdNode = INITIAL_NODE_ID;
 }
 
-void DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize)
+node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize)
 {
     unsigned int newDeepLevel = aFatherNode->deepLevel + 1;
-        std::cout << "2" << std::endl;
     node_t* newNode = new node_t(nodeCount, aFatherNode, aNameNode, newDeepLevel, aDirectory, aSize);
-        std::cout << "3" << std::endl;
     aFatherNode->childNodes.push_back(newNode);
     lastIdNode = nodeCount;
     nodeCount += 1;
+    return newNode;
 }
 
 node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t* rootNode)
