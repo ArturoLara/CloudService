@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <unistd.h>
+#include <sstream>
 
 Terminal::Terminal()
 {
@@ -74,7 +75,6 @@ void Terminal::ls(){
         tm* timeinfo = localtime (&node->lastChange);
         std::cout << node->size << "Bytes " << asctime(timeinfo) << std::endl;
     }
-    std::cout << std::endl;
 }
 
 node_t* Terminal::findDirectoryAtDirectory(node_t* directoryNode, std::string DirectoryName)
@@ -95,6 +95,39 @@ node_t* Terminal::findDirectoryAtDirectory(node_t* directoryNode, std::string Di
     return nodeToReturn;
 }
 
+node_t* Terminal::findFileAtDirectory(node_t* directoryNode, std::string fileName)
+{
+    node_t* nodeToReturn = NULL;
+    for(int index = 0; index < directoryNode->childNodes.size(); index++)
+    {
+        node_t* node = directoryNode->childNodes.at(index);
+        if(fileName == node->nameNode)
+        {
+            if(!node->directoryFlag)
+            {
+                nodeToReturn = node;
+                break;
+            }
+        }
+    }
+    return nodeToReturn;
+}
+
+node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeName)
+{
+    node_t* nodeToReturn = NULL;
+    for(int index = 0; index < directoryNode->childNodes.size(); index++)
+    {
+        node_t* node = directoryNode->childNodes.at(index);
+        if(nodeName == node->nameNode)
+        {
+            nodeToReturn = node;
+            break;
+        }
+    }
+    return nodeToReturn;
+}
+
 void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory)
 {
     destDirectory = tree->addNode(destDirectory, newNameDirectory, OriginDirectory->directoryFlag, OriginDirectory->size);
@@ -104,9 +137,70 @@ void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirec
     }
 }
 
+void Terminal::copyLocalDirectoryRecursive(node_t* destDirectory)
+{
+    std::string token;
+    std::string localItemList = getOutFromCommand("ls | sort");
+    std::stringstream streamString(localItemList);
+
+    while(std::getline(streamString, token, '\n'))
+    {
+        struct stat buffer;
+        stat(token.c_str(), &buffer);
+        if(S_ISREG(buffer.st_mode))
+        {
+            tree->addNode(destDirectory, token, false, buffer.st_size);
+        }
+        else
+        {
+            node_t* nextDir = tree->addNode(destDirectory, token, true, SIZE_OF_DIRECTORY);
+            chdir(token.c_str());
+            copyLocalDirectoryRecursive(nextDir);
+            chdir("..");
+        }
+    }
+}
+
+std::string Terminal::getOutFromCommand(std::string cmd)
+{
+    std::string data;
+    FILE * stream;
+    const int max_buffer = 256;
+    char buffer[max_buffer];
+    cmd.append(" 2>&1");
+    stream = popen(cmd.c_str(), "r");
+
+    if(stream)
+    {
+        while(!feof(stream))
+        {
+            if(fgets(buffer, max_buffer, stream) != NULL)
+            {
+                data.append(buffer);
+            }
+        }
+        pclose(stream);
+    }
+    return data;
+}
+bool Terminal::findSubdirectoryDependency(node_t* OriginDirectory, node_t* destDirectory)
+{
+    bool dependency = false;
+
+    if(OriginDirectory->id == destDirectory->id)
+    {
+        dependency = true;
+    }
+
+    for(node_t* node : destDirectory->childNodes)
+    {
+        dependency = findSubdirectoryDependency(OriginDirectory, node);
+    }
+
+    return dependency;
+}
+
 node_t* Terminal::findByPath(char *command){
-    std::cout << command+3<< std::endl;
-    std::cout << command << std::endl;
     bool dirFlag = false;
     if(!strncmp(&(command[strlen(command)-1]), "/", 1))
     {
@@ -149,7 +243,7 @@ node_t* Terminal::findByPathRecursive(char *path, node_t* actualDirectory, int i
             }
             else
             {
-                return targetDirectory;
+                return actualDirectory;
             }
         }
     }
@@ -198,11 +292,18 @@ void Terminal::mkdir(command_t aCommand){
         std::string nameOfDir(aCommand.args->at(0));
         if(std::string::npos == nameOfDir.find("/"))
         {
-            tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
+            if(findDirectoryAtDirectory(tree->getActualDirectoryNode(), nameOfDir) == NULL)
+            {
+                tree->addNode(tree->getActualDirectoryNode(), nameOfDir, true, SIZE_OF_DIRECTORY);
+            }
+            else
+            {
+                std::cout << "Error: You can not use the same name as other directory" << std::endl;
+            }
         }
         else
         {
-            std::cout << "You can not use \"/\"" << std::endl;
+            std::cout << "Error: You can not use \"/\"" << std::endl;
         }
     }
     else
@@ -258,19 +359,10 @@ void Terminal::rm(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
     {
-        std::string dirToRemove(aCommand.args->at(0));
+        std::string fileToRemove(aCommand.args->at(0));
         node_t* nodeToRemove = NULL;
-        int index;
 
-        for(index = 0; index < nodeToRemove->fatherNode->childNodes.size(); index++)
-        {
-            node_t* node = nodeToRemove->fatherNode->childNodes.at(index);
-            if(dirToRemove == node->nameNode)
-            {
-                nodeToRemove = node;
-                break;
-            }
-        }
+        nodeToRemove = findFileAtDirectory(tree->getActualDirectoryNode(), fileToRemove);
 
         if( nodeToRemove != NULL)
         {
@@ -283,7 +375,7 @@ void Terminal::rm(command_t aCommand)
     }
     else
     {
-        std::cout << "This file doesn't exist" << std::endl;
+        std::cout << "Invalid number of arguments" << std::endl;
     }
 }
 
@@ -291,12 +383,25 @@ void Terminal::upload(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
     {
-    //TODO: No se si debe subir archivos y directorios del sistema local o puede crear archivos (touch) en el remoto con esto
-    // y en el caso de subir un directorio, creará el directorio y luego nodos
+        std::string localNameToUpload(aCommand.args->at(0));
+
+        struct stat buffer;
+        stat(aCommand.args->at(0), &buffer);
+        if(S_ISREG(buffer.st_mode))
+        {
+            tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size);
+        }
+        else
+        {
+            node_t* nextDir = tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, true, SIZE_OF_DIRECTORY);
+            chdir(aCommand.args->at(0));
+            copyLocalDirectoryRecursive(nextDir);
+            chdir("..");
+        }
     }
     else
     {
-        std::cout << "This file doesn't exist" << std::endl;
+        std::cout << "Invalid number of arguments" << std::endl;
     }
 }
 
@@ -306,21 +411,24 @@ void Terminal::mv(command_t aCommand)
     {
         std::string nodeNameOrig(aCommand.args->at(0));
         std::string nodeNameDest(aCommand.args->at(1));
-
         node_t* targetNode = NULL;
 
-        for(int index = 0; index < tree->getActualDirectoryNode()->childNodes.size(); index++)
-        {
-            node_t* node = tree->getActualDirectoryNode()->childNodes.at(index);
-            if(nodeNameOrig == node->nameNode)
-            {
-                targetNode = node;
-                break;
-            }
-        }
+        targetNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrig);
+
         if(targetNode != NULL)
         {
-            tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+            if(targetNode->directoryFlag && findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameDest) == NULL)
+            {
+                tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+            }
+            else if(!targetNode->directoryFlag && findFileAtDirectory(tree->getActualDirectoryNode(), nodeNameDest) == NULL)
+            {
+                tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+            }
+            else
+            {
+                std::cout << "Error: You can not use same name for 2 files or directories" << std::endl;
+            }
         }
         else
         {
@@ -343,8 +451,10 @@ void Terminal::cp(command_t aCommand)
         char* destName;
         node_t* originNode = NULL;
         node_t* destNode = NULL;
+
         char* destPathCopy;
         strcpy(destPathCopy, aCommand.args->at(1));
+
         if(!strncmp(&(destPathCopy[strlen(destPathCopy)-1]), "/", 1))
         {
             destNodeName = nodeNameOrigin;
@@ -361,36 +471,42 @@ void Terminal::cp(command_t aCommand)
             }
             destNodeName = std::string(destName);
         }
+
         originNode = findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
         destNode = findByPath(aCommand.args->at(1));
 
         if(originNode != NULL && destNode != NULL)
         {
-            std::cout << destNode->nameNode << std::endl;
             if(originNode->directoryFlag)
             {
-                if(destNode->directoryFlag)
+                if(findDirectoryAtDirectory(destNode, destNodeName) == NULL)
                 {
-                    //directory -> directory
-                    copyDirectoryRecursive(originNode, destNode, destNodeName);
+                    if(!findSubdirectoryDependency(originNode, destNode))
+                    {
+                        copyDirectoryRecursive(originNode, destNode, destNodeName);
+                    }
+                    else
+                    {
+                        std::cout << "Error: Can not copy a directory in one of its subfolders" << std::endl;
+                    }
+
                 }
                 else
                 {
-                    std::cout << "Error: You can't copy a directory in a file" << std::endl;
+                    std::cout << "Error: You can not use same name for 2 directories" << std::endl;
                 }
             }
             else
             {
-                if(destNode->directoryFlag)
+                if(findFileAtDirectory(destNode, destNodeName) == NULL)
                 {
-                    //file -> directory
                     tree->addNode(destNode, destNodeName, false, originNode->size);
                 }
                 else
                 {
-                    //file -> file
-                    tree->addNode(destNode, destNodeName, false, originNode->size);
+                    std::cout << "Error: You can not use same name for 2 files" << std::endl;
                 }
+
             }
         }
         else

@@ -39,11 +39,16 @@ class Terminal{
 private:
     DataTree* tree;
     bool exit=false;
+    bool findSubdirectoryDependency(node_t* OriginDirectory, node_t* destDirectory);
     std::string pwdRecursive(node_t* node);
     node_t* findByPathRecursive(char* command, node_t* actualDirectory, int index, bool dirFlag);
     node_t* findByPath(char* command);
     node_t* findDirectoryAtDirectory(node_t* directoryNode, std::string DirectoryName);
+    node_t* findFileAtDirectory(node_t* directoryNode, std::string fileName);
+    node_t* findNodeAtDirectory(node_t* directoryNode, std::string nodeName);
     void copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory);
+    void copyLocalDirectoryRecursive(node_t* destDirectory);
+    std::string getOutFromCommand(std::string cmd);
 
 public:
     Terminal();
