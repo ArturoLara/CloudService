@@ -551,8 +551,6 @@ void Terminal::lpwd()
 void Terminal::run(){
     command_t command;
     command.args = new std::vector<char*>();
-    tree->addNode(tree->addNode(tree->getActualDirectoryNode(), "a", true, 2048), "b", true, 2048);
-    tree->addNode(tree->addNode(tree->getActualDirectoryNode(), "c", true, 2048), "d", true, 2048);
 
     while(!exit){
         command.clean();
