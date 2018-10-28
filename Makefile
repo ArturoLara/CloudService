@@ -4,7 +4,7 @@ CC=mpiCC
 CFLAGS=-g -DDEBUG
 LDLIBS=
 INCLUDE=-I. -I./include
-EXEC=prueba
+EXEC=CloudService
 OBJS=datatree.o terminal.o
 
 all: $(OBJS)
