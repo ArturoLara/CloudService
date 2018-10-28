@@ -1,3 +1,7 @@
+/*
+ * Authors: Mario Cavero y Arturo Lara
+*/
+
 #ifndef DATATREE_H
 #define DATATREE_H
 
