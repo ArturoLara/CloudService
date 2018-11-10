@@ -390,17 +390,30 @@ void Terminal::upload(command_t aCommand)
         std::string localNameToUpload(aCommand.args->at(0));
 
         struct stat buffer;
-        stat(aCommand.args->at(0), &buffer);
-        if(S_ISREG(buffer.st_mode))
+        if(findNodeAtDirectory(tree->getActualDirectoryNode(), localNameToUpload) == NULL)
         {
-            tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size);
+            if(stat(aCommand.args->at(0), &buffer) >= 0)
+            {
+                if(S_ISREG(buffer.st_mode))
+                {
+                    tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size);
+                }
+                else
+                {
+                    node_t* nextDir = tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, true, SIZE_OF_DIRECTORY);
+                    chdir(aCommand.args->at(0));
+                    copyLocalDirectoryRecursive(nextDir);
+                    chdir("..");
+                }
+            }
+            else
+            {
+                std::cout << "This file or directory doesn't exist" << std::endl;
+            }
         }
         else
         {
-            node_t* nextDir = tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, true, SIZE_OF_DIRECTORY);
-            chdir(aCommand.args->at(0));
-            copyLocalDirectoryRecursive(nextDir);
-            chdir("..");
+            std::cout << "Error: You can not use same name for 2 files or directories" << std::endl;
         }
     }
     else
@@ -417,26 +430,33 @@ void Terminal::mv(command_t aCommand)
         std::string nodeNameDest(aCommand.args->at(1));
         node_t* targetNode = NULL;
 
-        targetNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrig);
-
-        if(targetNode != NULL)
+        if(std::string::npos == nodeNameDest.find("/"))
         {
-            if(targetNode->directoryFlag && findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameDest) == NULL)
+            targetNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrig);
+
+            if(targetNode != NULL)
             {
-                tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
-            }
-            else if(!targetNode->directoryFlag && findFileAtDirectory(tree->getActualDirectoryNode(), nodeNameDest) == NULL)
-            {
-                tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+                if(targetNode->directoryFlag && NULL == findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameDest))
+                {
+                    tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+                }
+                else if(!targetNode->directoryFlag && NULL == findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameDest))
+                {
+                    tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
+                }
+                else
+                {
+                    std::cout << "Error: You can not use same name for 2 files or directories" << std::endl;
+                }
             }
             else
             {
-                std::cout << "Error: You can not use same name for 2 files or directories" << std::endl;
+                std::cout << "This file or directory doesn't exist" << std::endl;
             }
         }
         else
         {
-            std::cout << "This file or directory doesn't exist" << std::endl;
+            std::cout << "Error: You can not use \"/\"" << std::endl;
         }
     }
     else
@@ -476,14 +496,14 @@ void Terminal::cp(command_t aCommand)
             destNodeName = std::string(destName);
         }
 
-        originNode = findDirectoryAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
+        originNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
         destNode = findByPath(aCommand.args->at(1));
 
         if(originNode != NULL && destNode != NULL)
         {
             if(originNode->directoryFlag)
             {
-                if(findDirectoryAtDirectory(destNode, destNodeName) == NULL)
+                if(findNodeAtDirectory(destNode, destNodeName) == NULL)
                 {
                     if(!findSubdirectoryDependency(originNode, destNode))
                     {
@@ -502,7 +522,7 @@ void Terminal::cp(command_t aCommand)
             }
             else
             {
-                if(findFileAtDirectory(destNode, destNodeName) == NULL)
+                if(findNodeAtDirectory(destNode, destNodeName) == NULL)
                 {
                     tree->addNode(destNode, destNodeName, false, originNode->size);
                 }
@@ -578,31 +598,31 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
 {
     if(aCommandArray != NULL)
     {
-        if(!strncmp("cd", aCommandArray, 2))
+        if(!strncmp("cd", aCommandArray, 3))
             return command_e::CD;
-        else if(!strncmp("ls", aCommandArray, 2))
+        else if(!strncmp("ls\0", aCommandArray, 3))
             return command_e::LS;
-        else if(!strncmp("pwd", aCommandArray, 3))
+        else if(!strncmp("pwd\0", aCommandArray, 4))
             return command_e::PWD;
-        else if(!strncmp("mv", aCommandArray, 2))
+        else if(!strncmp("mv\0", aCommandArray, 3))
             return command_e::MV;
-        else if(!strncmp("cp", aCommandArray, 2))
+        else if(!strncmp("cp\0", aCommandArray, 3))
             return command_e::CP;
-        else if(!strncmp("mkdir", aCommandArray, 5))
+        else if(!strncmp("mkdir\0", aCommandArray, 6))
             return command_e::MKDIR;
-        else if(!strncmp("rmdir", aCommandArray, 5))
+        else if(!strncmp("rmdir\0", aCommandArray, 6))
             return command_e::RMDIR;
-        else if(!strncmp("rm", aCommandArray, 2))
+        else if(!strncmp("rm\0", aCommandArray, 3))
             return command_e::RM;
-        else if(!(strncmp("lls", aCommandArray, 3)))
+        else if(!(strncmp("lls\0", aCommandArray, 4)))
             return command_e::LLS;
-        else if(!strncmp("lcd", aCommandArray, 3))
+        else if(!strncmp("lcd\0", aCommandArray, 4))
             return command_e::LCD;
-        else if(!strncmp("lpwd", aCommandArray, 4))
+        else if(!strncmp("lpwd\0", aCommandArray, 5))
             return command_e::LPWD;
-        else if(!strncmp("upload", aCommandArray, 6))
+        else if(!strncmp("upload\0", aCommandArray, 7))
             return command_e::UPLOAD;
-        else if(!strncmp("exit", aCommandArray, 4))
+        else if(!strncmp("exit\0", aCommandArray, 5))
             return command_e::END;
     }
     return command_e::NO_COMMAND;
@@ -615,10 +635,24 @@ void Terminal::runCommand(command_t aCommand)
             cd(aCommand);
             break;
         case command_e::LS:
-            ls();
+            if(aCommand.args->size() == 1)
+            {
+                ls();
+            }
+            else
+            {
+                std::cout << "ls no admite parametros" << std::endl;
+            }
             break;
         case command_e::PWD:
-            pwd();
+            if(aCommand.args->size() == 1)
+            {
+                pwd();
+            }
+            else
+            {
+                std::cout << "pwd no admite parametros" << std::endl;
+            }
             break;
         case command_e::MV:
             mv(aCommand);
@@ -636,13 +670,27 @@ void Terminal::runCommand(command_t aCommand)
             rm(aCommand);
             break;
         case command_e::LLS:
-            lls();
+            if(aCommand.args->size() == 1)
+            {
+                lls();
+            }
+            else
+            {
+                std::cout << "lls no admite parametros" << std::endl;
+            }
             break;
         case command_e::LCD:
             lcd(aCommand);
             break;
         case command_e::LPWD:
-            lpwd();
+            if(aCommand.args->size() == 1)
+            {
+                lpwd();
+            }
+            else
+            {
+                std::cout << "lpwd no admite parametros" << std::endl;
+            }
             break;
         case command_e::UPLOAD:
             upload(aCommand);
