@@ -13,7 +13,7 @@
 
 Terminal::Terminal()
 {
-    tree = new DataTree();
+    tree = new DataTree(getOutFromCommand("pwd | tr -d \'\n\'"));
 }
 
 void Terminal::cd(command_t aCommand){
@@ -572,12 +572,15 @@ void Terminal::run(){
     command_t command;
     command.args = new std::vector<char*>();
 
+    tree->loadTree();
+
     while(!exit){
         command.clean();
         std::cout << "$: ";
         readCommand(&command);
         runCommand(command);
     }
+    tree->saveTree();
 }
 void Terminal::readCommand(command_t* aCommand){
     char * line= new char [1024];
