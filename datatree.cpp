@@ -119,10 +119,16 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
     }
 }
 
-node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize)
+node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId = std::vector<std::pair<int, int>>())
 {
     unsigned int newDeepLevel = aFatherNode->deepLevel + 1;
     node_t* newNode = new node_t(nodeCount, aFatherNode, aNameNode, newDeepLevel, aDirectory, aSize);
+
+    if(!aDirectory)
+    {
+        newNode->vectorOfBlocksId = vectorOfBlocksId;
+    }
+
     aFatherNode->childNodes.push_back(newNode);
     lastIdNode = nodeCount;
     nodeCount += 1;

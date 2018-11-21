@@ -20,7 +20,7 @@ class DataTree
 {
 public:
     DataTree(std::string pwd);
-    node_t* addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize);
+    node_t* addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId = std::vector<std::pair<int, int>>());
     node_t* findNode(unsigned int aIdNode);
     void updateNode(unsigned int aIdNode, std::string aNameNode, off_t size);
     void removeNode(node_t* aIdNode);

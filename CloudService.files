@@ -1,4 +1,6 @@
 Makefile
+diskmanager.cpp
+diskmanager.h
 main.cpp
 terminal.h
 README.md

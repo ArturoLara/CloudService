@@ -5,7 +5,7 @@ CFLAGS=-g -DDEBUG
 LDLIBS=
 INCLUDE=-I. -I./include
 EXEC=CloudService
-OBJS=datatree.o terminal.o
+OBJS=datatree.o terminal.o diskmanager.o
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDLIBS) $(OBJS) main.cpp -o $(EXEC)

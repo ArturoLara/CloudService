@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "datatree.h"
+#include "diskmanager.h"
 
+const int numBlocks = 32000;
 enum command_e
 {
     NO_COMMAND = 0,
@@ -42,6 +44,7 @@ class Terminal{
 
 private:
     DataTree* tree;
+    DiskManager* raid;
     bool exit=false;
     bool findSubdirectoryDependency(node_t* OriginDirectory, node_t* destDirectory);
     std::string pwdRecursive(node_t* node);

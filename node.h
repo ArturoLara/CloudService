@@ -18,6 +18,7 @@ struct node_t
     bool directoryFlag;
     off_t size;
     time_t lastChange;
+    std::vector<std::pair<int, int>> vectorOfBlocksId;
 
     node_t(unsigned int id, node_t* fatherNode, std::string nameNode, unsigned int actualDeepLevel, bool directory, off_t size)
     {

@@ -14,6 +14,7 @@
 Terminal::Terminal()
 {
     tree = new DataTree(getOutFromCommand("pwd | tr -d \'\n\'"));
+    raid = new DiskManager(getOutFromCommand("pwd | tr -d \'\n\'"), numBlocks);
 }
 
 void Terminal::cd(command_t aCommand){
@@ -396,7 +397,16 @@ void Terminal::upload(command_t aCommand)
             {
                 if(S_ISREG(buffer.st_mode))
                 {
-                    tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size);
+                    FILE* tempFile = fopen(aCommand.args->at(0), "rb");
+                    void* dataFile = malloc(sizeof(char)*buffer.st_size);
+
+                    fread(dataFile, sizeof(char), buffer.st_size, tempFile);
+
+                    std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
+                    tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size, fileBlocksId);
+
+                    fclose(tempFile);
+                    free(dataFile);
                 }
                 else
                 {
