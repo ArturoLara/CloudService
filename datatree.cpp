@@ -40,6 +40,7 @@ void DataTree::saveTree()
 void DataTree::saveTreeRecursive(node_t* node, FILE* file)
 {
     char name[25];
+    int size = node->vectorOfBlocksId.size();
     strcpy(name, node->nameNode.c_str());
     name[25] = '\0';
     fwrite(name,sizeof(char),sizeof(name), file);
@@ -47,6 +48,13 @@ void DataTree::saveTreeRecursive(node_t* node, FILE* file)
     fwrite(&(node->directoryFlag), sizeof(bool), 1, file);
     fwrite(&(node->lastChange), sizeof(time_t), 1, file);
     fwrite(&(node->size), sizeof(off_t), 1, file);
+    fwrite(&size, sizeof(int), 1, file);
+
+    for(int i = 0; i < node->vectorOfBlocksId.size(); i++)
+    {
+        fwrite(&(node->vectorOfBlocksId[i].first), sizeof(int), 1, file);
+        fwrite(&(node->vectorOfBlocksId[i].second), sizeof(int), 1, file);
+    }
 
     if(!node->childNodes.empty())
     {
@@ -90,14 +98,26 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
         bool flagDir;
         time_t lastChange;
         off_t size;
+        int numBlocks, blockId, diskId;
+        std::vector<std::pair<int,int>> vectorBlockId;
 
         fread(&name, sizeof(char), sizeof(name), file);
         fread(&depth, sizeof(unsigned int), 1, file);
         fread(&flagDir, sizeof(bool), 1, file);
         fread(&lastChange, sizeof(time_t), 1, file);
         fread(&size, sizeof(off_t), 1, file);
+        fread(&numBlocks, sizeof(int), 1, file);
+
+        for(int i = 0; i < numBlocks; i++)
+        {
+            fread(&diskId, sizeof(int), 1, file);
+            fread(&blockId, sizeof(int), 1, file);
+            std::pair<int,int> tempPair(diskId, blockId);
+            vectorBlockId.push_back(tempPair);
+        }
 
         node_t* newNode = new node_t(nodeCount, node, name, depth, flagDir, size);
+        newNode->vectorOfBlocksId = vectorBlockId;
         newNode->lastChange = lastChange;
         nodeCount++;
 
@@ -119,7 +139,7 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
     }
 }
 
-node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId = std::vector<std::pair<int, int>>())
+node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId)
 {
     unsigned int newDeepLevel = aFatherNode->deepLevel + 1;
     node_t* newNode = new node_t(nodeCount, aFatherNode, aNameNode, newDeepLevel, aDirectory, aSize);

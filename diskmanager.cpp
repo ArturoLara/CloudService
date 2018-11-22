@@ -8,16 +8,17 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
 {
     this->numBlocks = numBlocks;
     pwdLocal = pwd;
-
+    spaceInRAID = (numDisks*numBlocks*sizeOfBlock);
     for(int i = 0; i < numDisks; i++)
     {
+        std::cout << i << std::endl;
         std::string diskName = pwdLocal;
-        diskName += "disco";
+        diskName += "/disco";
         diskName += std::to_string(i);
         diskName += ".dat";
 
         std::string freeSectors = pwdLocal;
-        freeSectors += "sectoresLibres";
+        freeSectors += "/sectoresLibres";
         freeSectors += std::to_string(i);
         freeSectors += ".dat";
 
@@ -29,7 +30,6 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
             std::cout << "No se ha encontrado el disco " << i << ", se creará un nuevo disco" << std::endl;
             FILE* tmp = fopen(diskName.c_str(), "wb");
             fclose(tmp);
-
             format(numBlocks, i);
         }
         else
@@ -48,6 +48,7 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
                 fclose(sectorsFile);
             }
         }
+        vectorOfFreeBlocksRAID.push_back(std::list<int>());
 
         sectorsFile = fopen(freeSectors.c_str(), "rb");
         int numFreeBlocks, tmpBlockID;
@@ -55,59 +56,65 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
         for(int j = 0; j < numFreeBlocks; j++)
         {
             fread(&tmpBlockID ,sizeof(int), 1, sectorsFile);
-            vectorOfFreeBlocksRAID[i].push(tmpBlockID);
+            vectorOfFreeBlocksRAID[i].push_back(tmpBlockID);
         }
 
         fclose(sectorsFile);
     }
 }
 
-std::vector<std::pair<int,int>> DiskManager::writeFile(void* file, off_t sizeFile)
+std::vector<std::pair<int,int>> DiskManager::writeFile(char* file, off_t sizeFile)
 {
     std::vector<std::pair<int,int>> usedBlocks;
 
     char* normalizedData = NULL;
-    void* dataBock = malloc(sizeOfBlock*sizeof(char));
+    char* dataBock = (char*)malloc(sizeOfBlock*sizeof(char));
     int numOfBlocks = sizeFile/sizeOfBlock;
+    int sizeInDisk = sizeFile+(sizeOfBlock-(sizeFile%sizeOfBlock));
 
-    if(sizeFile%sizeOfBlock != 0)
+    if(sizeInDisk < spaceInRAID)
     {
-        int sizeInDisk = sizeFile+(sizeOfBlock-(sizeFile%sizeOfBlock));
-        normalizedData = (char*)malloc(sizeInDisk*sizeof(char));
-        memcpy(normalizedData, file, sizeFile);
-        for(int i = sizeFile; i <= sizeInDisk; i++)
+        if(sizeFile%sizeOfBlock != 0)
         {
-            *(normalizedData+i) = '\0';
+            normalizedData = (char*)malloc(sizeInDisk*sizeof(char));
+            memcpy(normalizedData, file, sizeFile);
+            for(int i = sizeFile; i <= sizeInDisk; i++)
+            {
+                *(normalizedData+i) = '\0';
+            }
+            numOfBlocks += 1;
         }
-        numOfBlocks += 1;
-    }
 
-    for(int i = 0; i < numOfBlocks; i++)
+        for(int i = 0; i < numOfBlocks; i++)
+        {
+            memcpy(dataBock, normalizedData+(i*sizeOfBlock), sizeof(char)*sizeOfBlock);
+            std::pair<int,int> tmpBlockID = writeBlock(dataBock);
+            usedBlocks.push_back(tmpBlockID);
+            if(tmpBlockID.second == -1)
+            {
+                break;
+            }
+        }
+        spaceInRAID -= sizeInDisk;
+        saveTables();
+
+        free(dataBock);
+        if(normalizedData != NULL)
+            free(normalizedData);
+    }
+    else
     {
-        memcpy(dataBock, normalizedData+(i*sizeOfBlock), sizeof(char)*sizeOfBlock);
-        std::pair<int,int> tmpBlockID = writeBlock(dataBock);
-        usedBlocks.push_back(tmpBlockID);
-        if(tmpBlockID.second == -1)
-        {
-            break;
-        }
+        std::cout << "No hay espacio suficiente, libere " << ((sizeInDisk-spaceInRAID)/(1024*1024)) << " Mb" << std::endl;
     }
-
-    saveTables();
-
-    free(dataBock);
-    if(normalizedData != NULL)
-        free(normalizedData);
-
     return usedBlocks;
 
 }
 
-void DiskManager::readFile(void* file, off_t sizeFile, std::vector<std::pair<int,int>> vectorOfBlocks)
+void DiskManager::readFile(char* file, off_t sizeFile, std::vector<std::pair<int,int>> vectorOfBlocks)
 {
-    void* normalizedData = malloc(vectorOfBlocks.size()*sizeOfBlock);
+    char* normalizedData = (char*)malloc(vectorOfBlocks.size()*sizeOfBlock);
 
-    void* dataBock = malloc(sizeOfBlock*sizeof(char));
+    char* dataBock = (char*)malloc(sizeOfBlock*sizeof(char));
 
     for(int i = 0; i < vectorOfBlocks.size(); i++)
     {
@@ -121,12 +128,13 @@ void DiskManager::readFile(void* file, off_t sizeFile, std::vector<std::pair<int
     free(normalizedData);
 }
 
-std::pair<int,int> DiskManager::writeBlock(void* block)
+std::pair<int,int> DiskManager::writeBlock(char* block)
 {
     int mayorSize = -1, diskToUse = -1;
     for(int i = 0; i < vectorOfFreeBlocksRAID.size(); i++)
     {
-        if(mayorSize < vectorOfFreeBlocksRAID[i].size() && vectorOfFreeBlocksRAID[i].size() > 0)
+        int tempSize = vectorOfFreeBlocksRAID[i].size();
+        if(mayorSize < tempSize)
         {
             mayorSize = vectorOfFreeBlocksRAID[i].size();
             diskToUse = i;
@@ -135,16 +143,16 @@ std::pair<int,int> DiskManager::writeBlock(void* block)
     if(diskToUse != -1)
     {
         int blockID = vectorOfFreeBlocksRAID[diskToUse].front();
-        vectorOfFreeBlocksRAID[diskToUse].pop();
+        vectorOfFreeBlocksRAID[diskToUse].pop_front();
         std::string diskName = pwdLocal;
-        diskName += "disco";
+        diskName += "/disco";
         diskName += std::to_string(diskToUse);
         diskName += ".dat";
 
-        FILE* diskFile = fopen(diskName.c_str(), "wb");
+        FILE* diskFile = fopen(diskName.c_str(), "ab");
         if(diskFile != NULL)
         {
-            fseek(diskFile, blockID*sizeOfBlock, SEEK_SET);
+            fseek(diskFile, (blockID-1)*sizeOfBlock, SEEK_SET);
             fwrite(block ,sizeof(char), sizeOfBlock, diskFile);
             fclose(diskFile);
             std::pair<int,int> pairBlock = std::pair<int,int>(diskToUse, blockID);
@@ -159,19 +167,19 @@ std::pair<int,int> DiskManager::writeBlock(void* block)
     return std::pair<int, int>();
 }
 
-void DiskManager::readBlock(void* block, std::pair<int,int> blockId)
+void DiskManager::readBlock(char* block, std::pair<int,int> blockId)
 {
     int diskToUse = blockId.first;
 
     std::string diskName = pwdLocal;
-    diskName += "disco";
+    diskName += "/disco";
     diskName += std::to_string(diskToUse);
     diskName += ".dat";
 
     FILE* diskFile = fopen(diskName.c_str(), "rb");
     if(diskFile != NULL)
     {
-        fseek(diskFile, blockId.second*sizeOfBlock, SEEK_SET);
+        fseek(diskFile, (blockId.second-1)*sizeOfBlock, SEEK_SET);
         fread(block ,sizeof(char), sizeOfBlock, diskFile);
         fclose(diskFile);
     }
@@ -188,7 +196,7 @@ void DiskManager::format(int newNumberOfBlocks, int disk)
         for(int i = 0; i < numDisks; i++)
         {
             std::string freeSectors = pwdLocal;
-            freeSectors += "sectoresLibres";
+            freeSectors += "/sectoresLibres";
             freeSectors += std::to_string(i);
             freeSectors += ".dat";
 
@@ -199,7 +207,6 @@ void DiskManager::format(int newNumberOfBlocks, int disk)
             {
                 fwrite(&j, sizeof(int), 1, sectorsFile);
             }
-
             fclose(sectorsFile);
         }
     }
@@ -209,7 +216,7 @@ void DiskManager::format(int newNumberOfBlocks, int disk)
             std::cout << "Se usará el mismo numero de bloques que los discos existentes, si quiere cambiarlo formatee todos los discos" << std::endl;
 
         std::string freeSectors = pwdLocal;
-        freeSectors += "sectoresLibres";
+        freeSectors += "/sectoresLibres";
         freeSectors += std::to_string(disk);
         freeSectors += ".dat";
 
@@ -231,7 +238,7 @@ void DiskManager::saveTables()
     for(int i = 0; i < numDisks; i++)
     {
         std::string freeSectors = pwdLocal;
-        freeSectors += "sectoresLibres";
+        freeSectors += "/sectoresLibres";
         freeSectors += std::to_string(i);
         freeSectors += ".dat";
 
@@ -240,10 +247,10 @@ void DiskManager::saveTables()
         int numFreeBlocks = vectorOfFreeBlocksRAID[i].size();
 
         fwrite(&numFreeBlocks, sizeof(int), 1, sectorsFile);
-        for(int j = 0; j < numFreeBlocks; j++)
+        for(std::list<int>::iterator it = vectorOfFreeBlocksRAID[i].begin(); it != vectorOfFreeBlocksRAID[i].end(); ++it)
         {
-            int tmpBlockID = vectorOfFreeBlocksRAID[i][j];
-            fread(&tmpBlockID ,sizeof(int), 1, sectorsFile);
+            int tmpBlockID = *it;
+            fwrite(&tmpBlockID ,sizeof(int), 1, sectorsFile);
         }
         fclose(sectorsFile);
     }

@@ -135,7 +135,17 @@ node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeNam
 
 void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory)
 {
-    destDirectory = tree->addNode(destDirectory, newNameDirectory, OriginDirectory->directoryFlag, OriginDirectory->size);
+    std::vector<std::pair<int,int>> fileBlocksId = std::vector<std::pair<int,int>>();
+    if(!OriginDirectory->directoryFlag)
+    {
+
+        char* dataFile = (char*)malloc(sizeof(char)*OriginDirectory->size);
+
+        raid->readFile(dataFile, OriginDirectory->size, OriginDirectory->vectorOfBlocksId);
+        fileBlocksId = raid->writeFile(dataFile, OriginDirectory->size);
+        free(dataFile);
+    }
+    destDirectory = tree->addNode(destDirectory, newNameDirectory, OriginDirectory->directoryFlag, OriginDirectory->size, fileBlocksId);
     for(node_t* node : OriginDirectory->childNodes)
     {
         copyDirectoryRecursive(node, destDirectory, node->nameNode);
@@ -154,7 +164,16 @@ void Terminal::copyLocalDirectoryRecursive(node_t* destDirectory)
         stat(token.c_str(), &buffer);
         if(S_ISREG(buffer.st_mode))
         {
-            tree->addNode(destDirectory, token, false, buffer.st_size);
+            FILE* tempFile = fopen(token.c_str(), "rb");
+            char* dataFile = (char*)malloc(sizeof(char)*buffer.st_size);
+
+            fread(dataFile, sizeof(char), buffer.st_size, tempFile);
+
+            std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
+            tree->addNode(tree->getActualDirectoryNode(), token, false, buffer.st_size, fileBlocksId);
+
+            fclose(tempFile);
+            free(dataFile);
         }
         else
         {
@@ -371,6 +390,10 @@ void Terminal::rm(command_t aCommand)
 
         if( nodeToRemove != NULL)
         {
+            if(!nodeToRemove->directoryFlag)
+            {
+                raid->removeFile(nodeToRemove->vectorOfBlocksId);
+            }
             tree->removeNode(nodeToRemove);
         }
         else
@@ -398,7 +421,7 @@ void Terminal::upload(command_t aCommand)
                 if(S_ISREG(buffer.st_mode))
                 {
                     FILE* tempFile = fopen(aCommand.args->at(0), "rb");
-                    void* dataFile = malloc(sizeof(char)*buffer.st_size);
+                    char* dataFile = (char*)malloc(sizeof(char)*buffer.st_size);
 
                     fread(dataFile, sizeof(char), buffer.st_size, tempFile);
 
@@ -429,6 +452,26 @@ void Terminal::upload(command_t aCommand)
     else
     {
         std::cout << "Invalid number of arguments" << std::endl;
+    }
+}
+
+void Terminal::download(command_t aCommand)
+{
+    if(aCommand.args->size() == 2)
+    {
+        std::string fileToDownload(aCommand.args->at(0));
+        node_t* nodeFile = findNodeAtDirectory(tree->getActualDirectoryNode(), fileToDownload);
+        if(nodeFile != NULL)
+        {
+                FILE* newFile = fopen(fileToDownload.c_str(), "wb");
+
+                char* fileData = (char*)malloc(nodeFile->size*sizeof(char));
+
+                raid->readFile(fileData, nodeFile->size, nodeFile->vectorOfBlocksId);
+
+                fwrite(fileData, sizeof(char), nodeFile->size, newFile);
+                fclose(newFile);
+        }
     }
 }
 
@@ -534,7 +577,16 @@ void Terminal::cp(command_t aCommand)
             {
                 if(findNodeAtDirectory(destNode, destNodeName) == NULL)
                 {
-                    tree->addNode(destNode, destNodeName, false, originNode->size);
+                    FILE* tempFile = fopen(aCommand.args->at(0), "rb");
+                    char* dataFile = (char*)malloc(sizeof(char)*originNode->size);
+
+                    fread(dataFile, sizeof(char), originNode->size, tempFile);
+
+                    std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, originNode->size);
+                    tree->addNode(destNode, destNodeName, false, originNode->size, fileBlocksId);
+
+                    fclose(tempFile);
+                    free(dataFile);
                 }
                 else
                 {
@@ -637,6 +689,8 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
             return command_e::UPLOAD;
         else if(!strncmp("exit\0", aCommandArray, 5))
             return command_e::END;
+        else if(!strncmp("download\0", aCommandArray, 9))
+            return command_e::DOWNLOAD;
     }
     return command_e::NO_COMMAND;
 }
@@ -710,6 +764,9 @@ void Terminal::runCommand(command_t aCommand)
             break;
         case command_e::END:
             exit = true;
+            break;
+        case command_e::DOWNLOAD:
+            download(aCommand);
             break;
         case command_e::NO_COMMAND:
             std::cout << "Command not found" << std::endl;
