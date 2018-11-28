@@ -67,7 +67,17 @@ target_wrapper.*
 
 # QtCreator
 *.autosave
-
+CloudService
+CloudService.config
+CloudService.creator
+CloudService.creator.user
+CloudService.creator.user.797b53f
+CloudService.files
+CloudService.includes
+Makefile.save
+*.dat
+disk
+*.jpg
 # QtCreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
