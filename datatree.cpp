@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <iostream>
 #include <cstring>
+/*!
+El constructor del árbol. Vamos a recibir pwd como parámetro.
+Creamos el nodo root, y actualizamos los distintos parámetros
+*/
 DataTree::DataTree(std::string pwd)
 {
     node_t* aRootNode = new node_t(INITIAL_NODE_ID, NULL, "root", INITIAL_DEEP_LEVEL, true, SIZE_OF_DIRECTORY);
@@ -16,7 +20,15 @@ DataTree::DataTree(std::string pwd)
     lastIdNode = INITIAL_NODE_ID;
     pwdLocal = pwd;
 }
-
+/*!
+ \brief DataTree::saveTree
+ saveTree nos va a guardar el árbol. Para ello, llamaremos al
+ método privado de guardar árbol de forma recursiva.
+ Tendremos nuestro path acabado en /arbol.dat que será donde lo guardaremos
+ Abrimos (o creamos en caso de no existir), ese archivo, y escribiremos
+ las cabeceras (la cantidad de nodos y el id del último nodo).
+ Si el nodo root tiene hijos, procederemos a guardar el árbol de forma recursiva.
+ */
 void DataTree::saveTree()
 {
     FILE* file;
@@ -36,7 +48,15 @@ void DataTree::saveTree()
 
     fclose(file);
 }
-
+/*!
+ * \brief DataTree::saveTreeRecursive
+ * \param node El nodo que le vamos a ir pasando de forma recursiva
+ * \param file
+ * Método privado para guardar el árbol de manera recursiva
+ * Escribimos los atributos del nodo en el fichero
+ * Por cada bloque, guardamos el primer y segundo elemento (disco y bloque)
+ * Si el árbol sigue sin estar vacío, volvemos a llamar a la recursiva
+ */
 void DataTree::saveTreeRecursive(node_t* node, FILE* file)
 {
     char name[25];
@@ -64,7 +84,14 @@ void DataTree::saveTreeRecursive(node_t* node, FILE* file)
         }
     }
 }
-
+/*!
+ * \brief DataTree::loadTree
+ * Método para cargar el árbol.
+ * Abrimos (o creamos si no existe) árbol.dat
+ * vamos a leer el numero de nodos y el id del último nodo
+ * Como ya lo hemos leído, vamos a cargar de manera recursiva
+ * desde el nodo root (hasta los hijos si tiene).
+ */
 void DataTree::loadTree()
 {
     FILE* file;
@@ -88,7 +115,18 @@ void DataTree::loadTree()
     }
 
 }
-
+/*!
+ * \brief DataTree::loadTreeRecursive
+ * \param node
+ * \param file
+ * \param totalNodes
+ * \return newNode
+ * Leemos del fichero los distintos atributos del nodo
+ * por cada bloque, leemos el id del disco y el bloque del disco, y
+ * eso se lo asignamos al par (id disco y bloque de disco).
+ * Mientras el nodo pasado por parámetro tenga hijos (su profundidad sea menor),
+ * vamos a ir cargando el nuevo nodo.
+ */
 node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int totalNodes)
 {
     if(nodeCount < totalNodes)
@@ -138,7 +176,18 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
         return NULL;
     }
 }
-
+/*!
+ * \brief DataTree::addNode
+ * \param aFatherNode
+ * \param aNameNode
+ * \param aDirectory
+ * \param aSize
+ * \param vectorOfBlocksId
+ * \return newNode el nodo añadido
+ * creamos un nuevo nodo con los parámetros pasados, con un nivel más de profundidad.
+ * Si no es un directorio, tiene un par (disco, bloque).Así que se lo asignamos
+ * Y actualizamos los valores.
+ */
 node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId)
 {
     unsigned int newDeepLevel = aFatherNode->deepLevel + 1;
@@ -154,7 +203,15 @@ node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDire
     nodeCount += 1;
     return newNode;
 }
-
+/*!
+ * \brief DataTree::findNodeRecursive
+ * \param aIdNode
+ * \param rootNode
+ * \return foundNode
+ * Para encontrar el nodo de forma recursiva, miramos si es el nodo root.
+ * Si no lo es, vamos a ir mirando por los nodos hijos hasta ver si ese
+ * es el nodo que buscamos.
+ */
 node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t* rootNode)
 {
     node_t* foundNode = NULL;
@@ -177,12 +234,25 @@ node_t* DataTree::findNodeRecursive(unsigned int aIdNode, node_t* rootNode)
 
     return foundNode;
 }
-
+/*!
+ * \brief DataTree::findNode
+ * \param aIdNode
+ * \return findNodeRecursive(aIdNode, rootNode);
+ * llamamos al método recursivo para encontrar el nodo
+ */
 node_t* DataTree::findNode(unsigned int aIdNode)
 {
     return findNodeRecursive(aIdNode, rootNode);
 }
-
+/*!
+ * \brief DataTree::updateNode
+ * \param aIdNode
+ * \param aNameNode
+ * \param aSize
+ * Metodo para updatear un nodo.
+ * Primero encontramos el nodo que queremos updatear con su id,
+ * y de ahí updateamos los valores.
+ */
 void DataTree::updateNode(unsigned int aIdNode, std::string aNameNode, off_t aSize)
 {
     node_t* nodeToModify = findNode(aIdNode);
@@ -190,6 +260,12 @@ void DataTree::updateNode(unsigned int aIdNode, std::string aNameNode, off_t aSi
     nodeToModify->size = aSize;
     time(&(nodeToModify->lastChange));
 }
+/*!
+ * \brief DataTree::removeNode
+ * \param nodeToRemove
+ * Para eliminar el nodo, encontramos el nodo que queremos eliminar
+ * y una vez lo encontramos, lo eliminamos.
+ */
 
 void DataTree::removeNode(node_t* nodeToRemove)
 {
