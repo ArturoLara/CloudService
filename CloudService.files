@@ -1,4 +1,5 @@
 Makefile
+disk.cpp
 diskmanager.cpp
 diskmanager.h
 main.cpp

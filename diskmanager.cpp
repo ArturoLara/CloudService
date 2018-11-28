@@ -8,70 +8,73 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
 {
     this->numBlocks = numBlocks;
     pwdLocal = pwd;
-    spaceInRAID = (numDisks*numBlocks*sizeOfBlock);
+
+    int rank=0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     for(int i = 0; i < numDisks; i++)
     {
-        std::cout << i << std::endl;
-        std::string diskName = pwdLocal;
-        diskName += "/disco";
-        diskName += std::to_string(i);
-        diskName += ".dat";
+        MPI_Comm* commDisk=new MPI_Comm[1];
+        MPI_Comm_spawn("disk", MPI_ARGV_NULL, 1, MPI_INFO_NULL, 0, MPI_COMM_SELF, commDisk, MPI_ERRCODES_IGNORE);
+        MPI_Send(&i, 1, MPI_INT, 0, 0, *commDisk);
+        diskVector.push_back(commDisk);
+    }
 
-        std::string freeSectors = pwdLocal;
-        freeSectors += "/sectoresLibres";
-        freeSectors += std::to_string(i);
-        freeSectors += ".dat";
+    std::string freeSectors = pwdLocal;
+    freeSectors += "/sectoresLibres";
+    freeSectors += ".dat";
 
-        FILE* sectorsFile;
-        FILE* diskFile = fopen(diskName.c_str(), "rb");
+    FILE* sectorsFile;
 
-        if(diskFile == NULL)
-        {
-            std::cout << "No se ha encontrado el disco " << i << ", se creará un nuevo disco" << std::endl;
-            FILE* tmp = fopen(diskName.c_str(), "wb");
-            fclose(tmp);
-            format(numBlocks, i);
-        }
-        else
-        {
-            fclose(diskFile);
-
-            sectorsFile = fopen(freeSectors.c_str(), "rb");
-            if(sectorsFile == NULL)
-            {
-                std::cout << "ERROR: Disco " << i << " corrupto: no se ha encontrado su archivo de indices";
-                format(numBlocks, i);
-
-            }
-            else
-            {
-                fclose(sectorsFile);
-            }
-        }
-        vectorOfFreeBlocksRAID.push_back(std::list<int>());
-
-        sectorsFile = fopen(freeSectors.c_str(), "rb");
-        int numFreeBlocks, tmpBlockID;
-        fread(&numFreeBlocks, sizeof(int), 1, sectorsFile);
-        for(int j = 0; j < numFreeBlocks; j++)
-        {
-            fread(&tmpBlockID ,sizeof(int), 1, sectorsFile);
-            vectorOfFreeBlocksRAID[i].push_back(tmpBlockID);
-        }
-
+    sectorsFile = fopen(freeSectors.c_str(), "rb");
+    if(sectorsFile == NULL)
+    {
+        std::cout << "[ERROR] No se ha encontrado archivo de indices" << std::endl;
+        format(numBlocks*numDisks);
+    }
+    else
+    {
         fclose(sectorsFile);
     }
+
+    sectorsFile = fopen(freeSectors.c_str(), "rb");
+    int numFreeBlocks, tmpBlockID;
+    fread(&numFreeBlocks, sizeof(int), 1, sectorsFile);
+    spaceInRAID = (numDisks*numFreeBlocks*sizeOfBlock);
+    for(int j = 0; j < numFreeBlocks; j++)
+    {
+        fread(&tmpBlockID ,sizeof(int), 1, sectorsFile);
+        vectorOfFreeBlocksRAID.push_back(tmpBlockID);
+    }
+
+    fclose(sectorsFile);
 }
 
-std::vector<std::pair<int,int>> DiskManager::writeFile(char* file, off_t sizeFile)
+void DiskManager::format(int numBlocks)
 {
-    std::vector<std::pair<int,int>> usedBlocks;
+    std::string freeSectors = pwdLocal;
+    freeSectors += "/sectoresLibres.dat";
+
+    FILE* sectorsFile = fopen(freeSectors.c_str(), "wb");
+
+    fwrite(&numBlocks, sizeof(int), 1, sectorsFile);
+    for(int j = 0; j < numBlocks; j++)
+    {
+        fwrite(&j, sizeof(int), 1, sectorsFile);
+    }
+
+    fclose(sectorsFile);
+}
+
+std::vector<int> DiskManager::writeFile(char* file, off_t sizeFile)
+{
+    std::vector<int> usedBlocks;
 
     char* normalizedData = NULL;
     char* dataBock = (char*)malloc(sizeOfBlock*sizeof(char));
     int numOfBlocks = sizeFile/sizeOfBlock;
     int sizeInDisk = sizeFile+(sizeOfBlock-(sizeFile%sizeOfBlock));
-
+    std::cout << spaceInRAID << " " << sizeInDisk << std::endl;
     if(sizeInDisk < spaceInRAID)
     {
         if(sizeFile%sizeOfBlock != 0)
@@ -87,13 +90,16 @@ std::vector<std::pair<int,int>> DiskManager::writeFile(char* file, off_t sizeFil
 
         for(int i = 0; i < numOfBlocks; i++)
         {
+
+            int tmpBlockID = vectorOfFreeBlocksRAID.front();
+            int remoteBlockId = tmpBlockID/numDisks;
+            int remoteFunc = WRITE;
+            vectorOfFreeBlocksRAID.pop_front();
             memcpy(dataBock, normalizedData+(i*sizeOfBlock), sizeof(char)*sizeOfBlock);
-            std::pair<int,int> tmpBlockID = writeBlock(dataBock);
+            MPI_Send(&remoteFunc, 1, MPI_INT, 0, 0, *(diskVector[tmpBlockID%numDisks]));
+            MPI_Send(&remoteBlockId, 1, MPI_INT, 0, 0, *(diskVector[tmpBlockID%numDisks]));
+            MPI_Send(dataBock, sizeOfBlock, MPI_CHAR, 0, 0, *(diskVector[tmpBlockID%numDisks]));
             usedBlocks.push_back(tmpBlockID);
-            if(tmpBlockID.second == -1)
-            {
-                break;
-            }
         }
         spaceInRAID -= sizeInDisk;
         saveTables();
@@ -110,7 +116,7 @@ std::vector<std::pair<int,int>> DiskManager::writeFile(char* file, off_t sizeFil
 
 }
 
-void DiskManager::readFile(char* file, off_t sizeFile, std::vector<std::pair<int,int>> vectorOfBlocks)
+void DiskManager::readFile(char* file, off_t sizeFile, std::vector<int> vectorOfBlocks)
 {
     char* normalizedData = (char*)malloc(vectorOfBlocks.size()*sizeOfBlock);
 
@@ -118,7 +124,13 @@ void DiskManager::readFile(char* file, off_t sizeFile, std::vector<std::pair<int
 
     for(int i = 0; i < vectorOfBlocks.size(); i++)
     {
-        readBlock(dataBock, vectorOfBlocks[i]);
+        MPI_Status status;
+        int remoteBlockId = vectorOfBlocks[i]/numDisks;
+        int remoteFunc = READ;
+        MPI_Send(&remoteFunc, 1, MPI_INT, 0, 0, *(diskVector[vectorOfBlocks[i]%numDisks]));
+        MPI_Send(&remoteBlockId, 1, MPI_INT, 0, 0, *(diskVector[vectorOfBlocks[i]%numDisks]));
+        MPI_Recv(dataBock, sizeOfBlock, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, *(diskVector[vectorOfBlocks[i]%numDisks]), &status);
+
         memcpy(normalizedData+(i*sizeOfBlock), dataBock, sizeof(char)*sizeOfBlock);
     }
 
@@ -128,147 +140,39 @@ void DiskManager::readFile(char* file, off_t sizeFile, std::vector<std::pair<int
     free(normalizedData);
 }
 
-std::pair<int,int> DiskManager::writeBlock(char* block)
-{
-    int mayorSize = -1, diskToUse = -1;
-    for(int i = 0; i < vectorOfFreeBlocksRAID.size(); i++)
-    {
-        int tempSize = vectorOfFreeBlocksRAID[i].size();
-        if(mayorSize < tempSize)
-        {
-            mayorSize = vectorOfFreeBlocksRAID[i].size();
-            diskToUse = i;
-        }
-    }
-    if(diskToUse != -1)
-    {
-        int blockID = vectorOfFreeBlocksRAID[diskToUse].front();
-        vectorOfFreeBlocksRAID[diskToUse].pop_front();
-        std::string diskName = pwdLocal;
-        diskName += "/disco";
-        diskName += std::to_string(diskToUse);
-        diskName += ".dat";
-
-        FILE* diskFile = fopen(diskName.c_str(), "ab");
-        if(diskFile != NULL)
-        {
-            fseek(diskFile, (blockID-1)*sizeOfBlock, SEEK_SET);
-            fwrite(block ,sizeof(char), sizeOfBlock, diskFile);
-            fclose(diskFile);
-            std::pair<int,int> pairBlock = std::pair<int,int>(diskToUse, blockID);
-            return pairBlock;
-        }
-    }
-    else
-    {
-        std::cout << "No hay espacio en el sistema" << std::endl;
-    }
-
-    return std::pair<int, int>();
-}
-
-void DiskManager::readBlock(char* block, std::pair<int,int> blockId)
-{
-    int diskToUse = blockId.first;
-
-    std::string diskName = pwdLocal;
-    diskName += "/disco";
-    diskName += std::to_string(diskToUse);
-    diskName += ".dat";
-
-    FILE* diskFile = fopen(diskName.c_str(), "rb");
-    if(diskFile != NULL)
-    {
-        fseek(diskFile, (blockId.second-1)*sizeOfBlock, SEEK_SET);
-        fread(block ,sizeof(char), sizeOfBlock, diskFile);
-        fclose(diskFile);
-    }
-    else
-    {
-        std::cout << "ERROR: Disco " << diskToUse << " perdido" << std::endl;
-    }
-}
-
-void DiskManager::format(int newNumberOfBlocks, int disk)
-{
-    if(disk == -1)
-    {
-        for(int i = 0; i < numDisks; i++)
-        {
-            std::string freeSectors = pwdLocal;
-            freeSectors += "/sectoresLibres";
-            freeSectors += std::to_string(i);
-            freeSectors += ".dat";
-
-            FILE* sectorsFile = fopen(freeSectors.c_str(), "wb");
-
-            fwrite(&newNumberOfBlocks, sizeof(int), 1, sectorsFile);
-            for(int j = 1; j <= newNumberOfBlocks; j++)
-            {
-                fwrite(&j, sizeof(int), 1, sectorsFile);
-            }
-            fclose(sectorsFile);
-        }
-    }
-    else
-    {
-        if(newNumberOfBlocks != numBlocks)
-            std::cout << "Se usará el mismo numero de bloques que los discos existentes, si quiere cambiarlo formatee todos los discos" << std::endl;
-
-        std::string freeSectors = pwdLocal;
-        freeSectors += "/sectoresLibres";
-        freeSectors += std::to_string(disk);
-        freeSectors += ".dat";
-
-        FILE* sectorsFile = fopen(freeSectors.c_str(), "wb");
-
-        fwrite(&numBlocks, sizeof(int), 1, sectorsFile);
-        for(int j = 1; j <= numBlocks; j++)
-        {
-            fwrite(&j, sizeof(int), 1, sectorsFile);
-        }
-
-        fclose(sectorsFile);
-    }
-
-}
-
 void DiskManager::saveTables()
 {
-    for(int i = 0; i < numDisks; i++)
+
+    std::string freeSectors = pwdLocal;
+    freeSectors += "/sectoresLibres.dat";
+
+    FILE* sectorsFile = fopen(freeSectors.c_str(), "wb");
+
+    int numFreeBlocks = vectorOfFreeBlocksRAID.size();
+
+    fwrite(&numFreeBlocks, sizeof(int), 1, sectorsFile);
+    for(std::list<int>::iterator it = vectorOfFreeBlocksRAID.begin(); it != vectorOfFreeBlocksRAID.end(); ++it)
     {
-        std::string freeSectors = pwdLocal;
-        freeSectors += "/sectoresLibres";
-        freeSectors += std::to_string(i);
-        freeSectors += ".dat";
-
-        FILE* sectorsFile = fopen(freeSectors.c_str(), "wb");
-
-        int numFreeBlocks = vectorOfFreeBlocksRAID[i].size();
-
-        fwrite(&numFreeBlocks, sizeof(int), 1, sectorsFile);
-        for(std::list<int>::iterator it = vectorOfFreeBlocksRAID[i].begin(); it != vectorOfFreeBlocksRAID[i].end(); ++it)
-        {
-            int tmpBlockID = *it;
-            fwrite(&tmpBlockID ,sizeof(int), 1, sectorsFile);
-        }
-        fclose(sectorsFile);
+        int tmpBlockID = *it;
+        fwrite(&tmpBlockID ,sizeof(int), 1, sectorsFile);
     }
+    fclose(sectorsFile);
 }
 
 void DiskManager::setNumBlocks(int newNumBlocks)
 {
     numBlocks = newNumBlocks;
 
-    format(newNumBlocks, -1);
+    format(newNumBlocks*numDisks);
 }
 
-void DiskManager::removeFile(std::vector<std::pair<int,int>> vectorOfBlocks)
+void DiskManager::removeFile(std::vector<int> vectorOfBlocks)
 {
-    for(std::pair<int, int> pairBlock : vectorOfBlocks)
+    for(int block : vectorOfBlocks)
     {
-        vectorOfFreeBlocksRAID[pairBlock.first].push_front(pairBlock.second);
+        vectorOfFreeBlocksRAID.push_front(block);
     }
+    spaceInRAID += (vectorOfBlocks.size()*sizeOfBlock);
 
     saveTables();
 }

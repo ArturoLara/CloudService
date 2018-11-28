@@ -135,7 +135,7 @@ node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeNam
 
 void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory)
 {
-    std::vector<std::pair<int,int>> fileBlocksId = std::vector<std::pair<int,int>>();
+    std::vector<int> fileBlocksId;
     if(!OriginDirectory->directoryFlag)
     {
 
@@ -169,7 +169,7 @@ void Terminal::copyLocalDirectoryRecursive(node_t* destDirectory)
 
             fread(dataFile, sizeof(char), buffer.st_size, tempFile);
 
-            std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
+            std::vector<int> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
             tree->addNode(tree->getActualDirectoryNode(), token, false, buffer.st_size, fileBlocksId);
 
             fclose(tempFile);
@@ -314,7 +314,7 @@ void Terminal::mkdir(command_t aCommand){
     if(aCommand.args->size() == 2)
     {
         std::string nameOfDir(aCommand.args->at(0));
-        if(std::string::npos == nameOfDir.find("/"))
+        if(std::string::npos == nameOfDir.find("/") && std::string::npos == nameOfDir.find("."))
         {
             if(findDirectoryAtDirectory(tree->getActualDirectoryNode(), nameOfDir) == NULL)
             {
@@ -327,7 +327,7 @@ void Terminal::mkdir(command_t aCommand){
         }
         else
         {
-            std::cout << "Error: You can not use \"/\"" << std::endl;
+            std::cout << "Error: You can not use special characters" << std::endl;
         }
     }
     else
@@ -425,8 +425,9 @@ void Terminal::upload(command_t aCommand)
 
                     fread(dataFile, sizeof(char), buffer.st_size, tempFile);
 
-                    std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
-                    tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size, fileBlocksId);
+                    std::vector<int> fileBlocksId = raid->writeFile(dataFile, buffer.st_size);
+                    if(fileBlocksId.size() > 0)
+                        tree->addNode(tree->getActualDirectoryNode(), localNameToUpload, false, buffer.st_size, fileBlocksId);
 
                     fclose(tempFile);
                     free(dataFile);
@@ -463,14 +464,24 @@ void Terminal::download(command_t aCommand)
         node_t* nodeFile = findNodeAtDirectory(tree->getActualDirectoryNode(), fileToDownload);
         if(nodeFile != NULL)
         {
-                FILE* newFile = fopen(fileToDownload.c_str(), "wb");
-
+            if(!nodeFile->directoryFlag)
+            {
                 char* fileData = (char*)malloc(nodeFile->size*sizeof(char));
 
                 raid->readFile(fileData, nodeFile->size, nodeFile->vectorOfBlocksId);
 
+                FILE* newFile = fopen(fileToDownload.c_str(), "wb");
                 fwrite(fileData, sizeof(char), nodeFile->size, newFile);
                 fclose(newFile);
+            }
+            else
+            {
+                std::cout << fileToDownload.c_str() << " no es un archivo" << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "Archivo no encontrado..." << std::endl;
         }
     }
 }
@@ -483,7 +494,7 @@ void Terminal::mv(command_t aCommand)
         std::string nodeNameDest(aCommand.args->at(1));
         node_t* targetNode = NULL;
 
-        if(std::string::npos == nodeNameDest.find("/"))
+        if(std::string::npos == nodeNameDest.find("/") && std::string::npos == nodeNameDest.find("."))
         {
             targetNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrig);
 
@@ -509,7 +520,7 @@ void Terminal::mv(command_t aCommand)
         }
         else
         {
-            std::cout << "Error: You can not use \"/\"" << std::endl;
+            std::cout << "Error: You can not use special characters" << std::endl;
         }
     }
     else
@@ -582,7 +593,7 @@ void Terminal::cp(command_t aCommand)
 
                     fread(dataFile, sizeof(char), originNode->size, tempFile);
 
-                    std::vector<std::pair<int,int>> fileBlocksId = raid->writeFile(dataFile, originNode->size);
+                    std::vector<int> fileBlocksId = raid->writeFile(dataFile, originNode->size);
                     tree->addNode(destNode, destNodeName, false, originNode->size, fileBlocksId);
 
                     fclose(tempFile);
@@ -629,6 +640,36 @@ void Terminal::lpwd()
 {
     system("pwd");
 }
+
+void Terminal::touch(command_t aCommand)
+{
+    if(aCommand.args->size() == 2)
+    {
+        std::string nameOfDir = aCommand.args->at(0);
+        if(std::string::npos == nameOfDir.find("/"))
+        {
+            if(findDirectoryAtDirectory(tree->getActualDirectoryNode(), nameOfDir) == NULL)
+            {
+                tree->addNode(tree->getActualDirectoryNode(), nameOfDir, false, 0);
+            }
+            else
+            {
+                std::cout << "Error: You can not use the same name as other directory" << std::endl;
+            }
+
+
+        }
+        else
+        {
+            std::cout << "Error: You can not use special characters" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Invalid number of arguments" << std::endl;
+    }
+}
+
 
 void Terminal::run(){
     command_t command;
@@ -691,6 +732,8 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
             return command_e::END;
         else if(!strncmp("download\0", aCommandArray, 9))
             return command_e::DOWNLOAD;
+        else if(!strncmp("touch\0", aCommandArray, 9))
+            return command_e::TOUCH;
     }
     return command_e::NO_COMMAND;
 }
@@ -767,6 +810,9 @@ void Terminal::runCommand(command_t aCommand)
             break;
         case command_e::DOWNLOAD:
             download(aCommand);
+            break;
+        case command_e::TOUCH:
+            touch(aCommand);
             break;
         case command_e::NO_COMMAND:
             std::cout << "Command not found" << std::endl;

@@ -27,7 +27,8 @@ enum command_e
     LPWD = 11,
     UPLOAD = 12,
     END = 13,
-    DOWNLOAD = 14
+    DOWNLOAD = 14,
+    TOUCH = 15
 };
 
 typedef struct command_t{
@@ -77,6 +78,7 @@ public:
     void lcd(command_t aCommand);
     void lpwd();
     void download(command_t aCommand);
+    void touch(command_t aCommand);
 };
 
 #endif // TERMINAL_H

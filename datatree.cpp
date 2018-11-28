@@ -52,8 +52,7 @@ void DataTree::saveTreeRecursive(node_t* node, FILE* file)
 
     for(int i = 0; i < node->vectorOfBlocksId.size(); i++)
     {
-        fwrite(&(node->vectorOfBlocksId[i].first), sizeof(int), 1, file);
-        fwrite(&(node->vectorOfBlocksId[i].second), sizeof(int), 1, file);
+        fwrite(&(node->vectorOfBlocksId[i]), sizeof(int), 1, file);
     }
 
     if(!node->childNodes.empty())
@@ -98,8 +97,8 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
         bool flagDir;
         time_t lastChange;
         off_t size;
-        int numBlocks, blockId, diskId;
-        std::vector<std::pair<int,int>> vectorBlockId;
+        int numBlocks, blockId;
+        std::vector<int> vectorBlockId;
 
         fread(&name, sizeof(char), sizeof(name), file);
         fread(&depth, sizeof(unsigned int), 1, file);
@@ -110,10 +109,8 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
 
         for(int i = 0; i < numBlocks; i++)
         {
-            fread(&diskId, sizeof(int), 1, file);
             fread(&blockId, sizeof(int), 1, file);
-            std::pair<int,int> tempPair(diskId, blockId);
-            vectorBlockId.push_back(tempPair);
+            vectorBlockId.push_back(blockId);
         }
 
         node_t* newNode = new node_t(nodeCount, node, name, depth, flagDir, size);
@@ -139,7 +136,7 @@ node_t* DataTree::loadTreeRecursive(node_t* node, FILE* file, unsigned int total
     }
 }
 
-node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<std::pair<int, int>> vectorOfBlocksId)
+node_t* DataTree::addNode(node_t* aFatherNode, std::string aNameNode, bool aDirectory, off_t aSize, std::vector<int> vectorOfBlocksId)
 {
     unsigned int newDeepLevel = aFatherNode->deepLevel + 1;
     node_t* newNode = new node_t(nodeCount, aFatherNode, aNameNode, newDeepLevel, aDirectory, aSize);
