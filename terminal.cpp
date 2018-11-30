@@ -10,13 +10,22 @@
 #include <cstring>
 #include <unistd.h>
 #include <sstream>
-
+/*!
+ * \brief Terminal::Terminal
+ * El constructor de la terminal
+ * Nos inicializa el Árbol y el Controlador del disco (DiskManager)
+ */
 Terminal::Terminal()
 {
     tree = new DataTree(getOutFromCommand("pwd | tr -d \'\n\'"));
     raid = new DiskManager(getOutFromCommand("pwd | tr -d \'\n\'"), numBlocks);
 }
-
+/*!
+ * \brief Terminal::cd
+ * \param aCommand la ruta a la que vamos a ir
+ * Método que sirve para movernos a un directorio especificado
+ * Abordamos las causas de "cd ..", "cd nombre", y cd pasado con /
+ */
 void Terminal::cd(command_t aCommand){
     if(aCommand.args->size() == 2)
     {
@@ -63,6 +72,10 @@ void Terminal::cd(command_t aCommand){
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
+/*!
+ * \brief Terminal::ls
+ * Método que nos lista todos los nodos que hay en donde nos encontremos
+ */
 
 void Terminal::ls(){
     std::cout << std::endl;
@@ -81,7 +94,13 @@ void Terminal::ls(){
         std::cout << node->size << "Bytes " << asctime(timeinfo) << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::findDirectoryAtDirectory
+ * \param directoryNode es el nodo base
+ * \param DirectoryName es el nombre del directorio a encontrar
+ * \return nodeToReturn nos va a devolver el nodo encontrado
+ * Este método nos va a encontrar un directorio en el directorio actual
+ */
 node_t* Terminal::findDirectoryAtDirectory(node_t* directoryNode, std::string DirectoryName)
 {
     node_t* nodeToReturn = NULL;
@@ -99,7 +118,14 @@ node_t* Terminal::findDirectoryAtDirectory(node_t* directoryNode, std::string Di
     }
     return nodeToReturn;
 }
-
+/*!
+ * \brief Terminal::findFileAtDirectory
+ * \param directoryNode el nodo base
+ * \param fileName el nombre del fichero a buscar
+ * \return nodeToReturn es el fichero encontrado
+ * Este método nos encuentra un fichero en un directorio.
+ * Siempre vamos a buscar por el número total de hijos en el directorio.
+ */
 node_t* Terminal::findFileAtDirectory(node_t* directoryNode, std::string fileName)
 {
     node_t* nodeToReturn = NULL;
@@ -117,7 +143,15 @@ node_t* Terminal::findFileAtDirectory(node_t* directoryNode, std::string fileNam
     }
     return nodeToReturn;
 }
-
+/*!
+ * \brief Terminal::findNodeAtDirectory
+ * \param directoryNode es el nodo base
+ * \param nodeName es el nombre del nodo
+ * \return nodeToReturn es el nodo encontrado
+ * Este método nos va a buscar un nodo en un directorio, y si existe
+ *  nos lo va a devolver
+ * Siempre vamos a mirar en todos los hijos del directorio en el que estamos.
+ */
 node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeName)
 {
     node_t* nodeToReturn = NULL;
@@ -132,7 +166,16 @@ node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeNam
     }
     return nodeToReturn;
 }
-
+/*!
+ * \brief Terminal::copyDirectoryRecursive
+ * \param OriginDirectory es el nodo origen
+ * \param destDirectory es el nodo destino
+ * \param newNameDirectory es el nuevo nombre
+ * Este método nos va a copiar un directorio (con todos sus hijos, de manera recursiva)
+ * en el directorio especificado.
+ * Como estamos copiando, significa que necesitamos espacio y escribirlo en disco
+ * Con lo que iremos escrribiendo el nodo que vayamos copiando
+ */
 void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory)
 {
     std::vector<int> fileBlocksId;

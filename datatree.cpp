@@ -21,13 +21,13 @@ DataTree::DataTree(std::string pwd)
     pwdLocal = pwd;
 }
 /*!
- \brief DataTree::saveTree
- saveTree nos va a guardar el árbol. Para ello, llamaremos al
- método privado de guardar árbol de forma recursiva.
- Tendremos nuestro path acabado en /arbol.dat que será donde lo guardaremos
- Abrimos (o creamos en caso de no existir), ese archivo, y escribiremos
- las cabeceras (la cantidad de nodos y el id del último nodo).
- Si el nodo root tiene hijos, procederemos a guardar el árbol de forma recursiva.
+ * \brief DataTree::saveTree
+ * saveTree nos va a guardar el árbol. Para ello, llamaremos al
+ * método privado de guardar árbol de forma recursiva.
+ * Tendremos nuestro path acabado en /arbol.dat que será donde lo guardaremos
+ * Abrimos (o creamos en caso de no existir), ese archivo, y escribiremos
+ * las cabeceras (la cantidad de nodos y el id del último nodo).
+ * Si el nodo root tiene hijos, procederemos a guardar el árbol de forma recursiva.
  */
 void DataTree::saveTree()
 {

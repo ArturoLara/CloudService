@@ -167,11 +167,27 @@ public:
     /// \brief Método para cambiar de nombre un fichero/directorio en nuestro árbol
     /// \param aCommand es el comando entero para cambiar el nombre.
     void mv(command_t aCommand);
+
+    /// \brief Método para copiar un nodo en una posición
+    /// \param aCommand es el comando entero para copiar el nodo y el lugar
     void cp(command_t aCommand);
+
+    /// \brief Método para hacer LS en nuestro árbol local
     void lls();
+
+    /// \brief Método para CD en nuestro árbol local
+    /// \param aCommand es el lugar donde nos vamos a mover
     void lcd(command_t aCommand);
+
+    /// \brief Método para hacer PWD en nuestro árbol local
     void lpwd();
+
+    /// \brief Método para descargar un archivo (no directorio)
+    /// \param aCommand es el archivo a descargar
     void download(command_t aCommand);
+
+    /// \brief Método para crear un nodo
+    /// \param aCommand es el comando para la creación
     void touch(command_t aCommand);
 };
 
