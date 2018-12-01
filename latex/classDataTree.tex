@@ -1,0 +1,230 @@
+\hypertarget{classDataTree}{}\section{Data\+Tree Class Reference}
+\label{classDataTree}\index{Data\+Tree@{Data\+Tree}}
+
+
+La clase \hyperlink{classDataTree}{Data\+Tree} es la clase del árbol.  
+
+
+
+
+{\ttfamily \#include $<$datatree.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDataTree_ad15b4598b9fe62c07ac85ef08e9f0d3e}{Data\+Tree} (std\+::string pwd)
+\begin{DoxyCompactList}\small\item\em El constructor del árbol. \end{DoxyCompactList}\item 
+\hyperlink{structnode__t}{node\+\_\+t} $\ast$ \hyperlink{classDataTree_aac6f58c8502bae9254bcb476798c23fb}{add\+Node} (\hyperlink{structnode__t}{node\+\_\+t} $\ast$a\+Father\+Node, std\+::string a\+Name\+Node, bool a\+Directory, off\+\_\+t a\+Size, std\+::vector$<$ int $>$ vector\+Of\+Blocks\+Id=std\+::vector$<$ int $>$())
+\begin{DoxyCompactList}\small\item\em Método para añadir un nodo. \end{DoxyCompactList}\item 
+\hyperlink{structnode__t}{node\+\_\+t} $\ast$ \hyperlink{classDataTree_a657b8a8c425792549233eeb6fff18e16}{find\+Node} (unsigned int a\+Id\+Node)
+\begin{DoxyCompactList}\small\item\em Método para encontrar un nodo. \end{DoxyCompactList}\item 
+void \hyperlink{classDataTree_a8b38e906b287a8968d910bd3c9d1c9ce}{update\+Node} (unsigned int a\+Id\+Node, std\+::string a\+Name\+Node, off\+\_\+t size)
+\begin{DoxyCompactList}\small\item\em Método para updatear un nodo. \end{DoxyCompactList}\item 
+void \hyperlink{classDataTree_ad5cf54ba01f825be5feb7c4a9c42a1ae}{remove\+Node} (\hyperlink{structnode__t}{node\+\_\+t} $\ast$a\+Id\+Node)
+\begin{DoxyCompactList}\small\item\em Método para eliminar el nodo. \end{DoxyCompactList}\item 
+\hyperlink{structnode__t}{node\+\_\+t} $\ast$ \hyperlink{classDataTree_a65a382929fed2fe66ec7b245eba4700d}{get\+Actual\+Directory\+Node} ()
+\begin{DoxyCompactList}\small\item\em Método para saber el directorio actual del nodo. \end{DoxyCompactList}\item 
+void \hyperlink{classDataTree_a24e9d2aac27bf64c33708e94ddf2c429}{set\+Actual\+Directory\+Node} (\hyperlink{structnode__t}{node\+\_\+t} $\ast$node)
+\begin{DoxyCompactList}\small\item\em Método para setear el directorio del nodo. \end{DoxyCompactList}\item 
+void \hyperlink{classDataTree_ad82644547c535fa1802e166efb211a88}{save\+Tree} ()
+\begin{DoxyCompactList}\small\item\em Método para guardar el árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classDataTree_ade69ae1d6b9c9c0b61abcb397fef1484}{load\+Tree} ()
+\begin{DoxyCompactList}\small\item\em Método para cargar el árbol. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+La clase \hyperlink{classDataTree}{Data\+Tree} es la clase del árbol. 
+
+La clase que vamos a utilizar para nuestro árbol. Tendrá distintos métodos que utilicen los nodos, añadirlos y demás. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classDataTree_ad15b4598b9fe62c07ac85ef08e9f0d3e}\label{classDataTree_ad15b4598b9fe62c07ac85ef08e9f0d3e}} 
+\index{Data\+Tree@{Data\+Tree}!Data\+Tree@{Data\+Tree}}
+\index{Data\+Tree@{Data\+Tree}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{Data\+Tree()}{DataTree()}}
+{\footnotesize\ttfamily Data\+Tree\+::\+Data\+Tree (\begin{DoxyParamCaption}\item[{std\+::string}]{pwd }\end{DoxyParamCaption})}
+
+
+
+El constructor del árbol. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pwd} & es la direccion princiapl\\
+\hline
+\end{DoxyParams}
+El constructor del árbol. Vamos a recibir pwd como parámetro. Creamos el nodo root, y actualizamos los distintos parámetros 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classDataTree_aac6f58c8502bae9254bcb476798c23fb}\label{classDataTree_aac6f58c8502bae9254bcb476798c23fb}} 
+\index{Data\+Tree@{Data\+Tree}!add\+Node@{add\+Node}}
+\index{add\+Node@{add\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{add\+Node()}{addNode()}}
+{\footnotesize\ttfamily \hyperlink{structnode__t}{node\+\_\+t} $\ast$ Data\+Tree\+::add\+Node (\begin{DoxyParamCaption}\item[{\hyperlink{structnode__t}{node\+\_\+t} $\ast$}]{a\+Father\+Node,  }\item[{std\+::string}]{a\+Name\+Node,  }\item[{bool}]{a\+Directory,  }\item[{off\+\_\+t}]{a\+Size,  }\item[{std\+::vector$<$ int $>$}]{vector\+Of\+Blocks\+Id = {\ttfamily std\+:\+:vector$<$int$>$()} }\end{DoxyParamCaption})}
+
+
+
+Método para añadir un nodo. 
+
+\hyperlink{classDataTree_aac6f58c8502bae9254bcb476798c23fb}{Data\+Tree\+::add\+Node}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Father\+Node} & El puntero al padre \\
+\hline
+{\em a\+Name\+Node} & El nombre del nodo a añadir \\
+\hline
+{\em a\+Directory} & Para saber si es directorio o no. \\
+\hline
+{\em a\+Size} & nos indica el tamaño del nodo a añadir \\
+\hline
+{\em vector\+Of\+Blocks\+Id} & son el par de disco y bloque del nodo \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+El nodo a añadir
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Father\+Node} & \\
+\hline
+{\em a\+Name\+Node} & \\
+\hline
+{\em a\+Directory} & \\
+\hline
+{\em a\+Size} & \\
+\hline
+{\em vector\+Of\+Blocks\+Id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+new\+Node el nodo añadido creamos un nuevo nodo con los parámetros pasados, con un nivel más de profundidad. Si no es un directorio, tiene un par (disco, bloque).Así que se lo asignamos Y actualizamos los valores. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDataTree_a657b8a8c425792549233eeb6fff18e16}\label{classDataTree_a657b8a8c425792549233eeb6fff18e16}} 
+\index{Data\+Tree@{Data\+Tree}!find\+Node@{find\+Node}}
+\index{find\+Node@{find\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{find\+Node()}{findNode()}}
+{\footnotesize\ttfamily \hyperlink{structnode__t}{node\+\_\+t} $\ast$ Data\+Tree\+::find\+Node (\begin{DoxyParamCaption}\item[{unsigned int}]{a\+Id\+Node }\end{DoxyParamCaption})}
+
+
+
+Método para encontrar un nodo. 
+
+\hyperlink{classDataTree_a657b8a8c425792549233eeb6fff18e16}{Data\+Tree\+::find\+Node}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Id\+Node} & Es el nodo a encontrar \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+el nodo encontrado
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Id\+Node} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+find\+Node\+Recursive(a\+Id\+Node, root\+Node); llamamos al método recursivo para encontrar el nodo 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDataTree_a65a382929fed2fe66ec7b245eba4700d}\label{classDataTree_a65a382929fed2fe66ec7b245eba4700d}} 
+\index{Data\+Tree@{Data\+Tree}!get\+Actual\+Directory\+Node@{get\+Actual\+Directory\+Node}}
+\index{get\+Actual\+Directory\+Node@{get\+Actual\+Directory\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{get\+Actual\+Directory\+Node()}{getActualDirectoryNode()}}
+{\footnotesize\ttfamily \hyperlink{structnode__t}{node\+\_\+t}$\ast$ Data\+Tree\+::get\+Actual\+Directory\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Método para saber el directorio actual del nodo. 
+
+\begin{DoxyReturn}{Returns}
+el directorio del nodo 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDataTree_ade69ae1d6b9c9c0b61abcb397fef1484}\label{classDataTree_ade69ae1d6b9c9c0b61abcb397fef1484}} 
+\index{Data\+Tree@{Data\+Tree}!load\+Tree@{load\+Tree}}
+\index{load\+Tree@{load\+Tree}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{load\+Tree()}{loadTree()}}
+{\footnotesize\ttfamily void Data\+Tree\+::load\+Tree (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método para cargar el árbol. 
+
+\hyperlink{classDataTree_ade69ae1d6b9c9c0b61abcb397fef1484}{Data\+Tree\+::load\+Tree} Método para cargar el árbol. Abrimos (o creamos si no existe) árbol.\+dat vamos a leer el numero de nodos y el id del último nodo Como ya lo hemos leído, vamos a cargar de manera recursiva desde el nodo root (hasta los hijos si tiene). \mbox{\Hypertarget{classDataTree_ad5cf54ba01f825be5feb7c4a9c42a1ae}\label{classDataTree_ad5cf54ba01f825be5feb7c4a9c42a1ae}} 
+\index{Data\+Tree@{Data\+Tree}!remove\+Node@{remove\+Node}}
+\index{remove\+Node@{remove\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{remove\+Node()}{removeNode()}}
+{\footnotesize\ttfamily void Data\+Tree\+::remove\+Node (\begin{DoxyParamCaption}\item[{\hyperlink{structnode__t}{node\+\_\+t} $\ast$}]{node\+To\+Remove }\end{DoxyParamCaption})}
+
+
+
+Método para eliminar el nodo. 
+
+\hyperlink{classDataTree_ad5cf54ba01f825be5feb7c4a9c42a1ae}{Data\+Tree\+::remove\+Node}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Id\+Node} & El id del nodo a eliminar\\
+\hline
+{\em node\+To\+Remove} & Para eliminar el nodo, encontramos el nodo que queremos eliminar y una vez lo encontramos, lo eliminamos. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDataTree_ad82644547c535fa1802e166efb211a88}\label{classDataTree_ad82644547c535fa1802e166efb211a88}} 
+\index{Data\+Tree@{Data\+Tree}!save\+Tree@{save\+Tree}}
+\index{save\+Tree@{save\+Tree}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{save\+Tree()}{saveTree()}}
+{\footnotesize\ttfamily void Data\+Tree\+::save\+Tree (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método para guardar el árbol. 
+
+\hyperlink{classDataTree_ad82644547c535fa1802e166efb211a88}{Data\+Tree\+::save\+Tree} save\+Tree nos va a guardar el árbol. Para ello, llamaremos al método privado de guardar árbol de forma recursiva. Tendremos nuestro path acabado en /arbol.dat que será donde lo guardaremos Abrimos (o creamos en caso de no existir), ese archivo, y escribiremos las cabeceras (la cantidad de nodos y el id del último nodo). Si el nodo root tiene hijos, procederemos a guardar el árbol de forma recursiva. \mbox{\Hypertarget{classDataTree_a24e9d2aac27bf64c33708e94ddf2c429}\label{classDataTree_a24e9d2aac27bf64c33708e94ddf2c429}} 
+\index{Data\+Tree@{Data\+Tree}!set\+Actual\+Directory\+Node@{set\+Actual\+Directory\+Node}}
+\index{set\+Actual\+Directory\+Node@{set\+Actual\+Directory\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{set\+Actual\+Directory\+Node()}{setActualDirectoryNode()}}
+{\footnotesize\ttfamily void Data\+Tree\+::set\+Actual\+Directory\+Node (\begin{DoxyParamCaption}\item[{\hyperlink{structnode__t}{node\+\_\+t} $\ast$}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Método para setear el directorio del nodo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em El} & nodo del directorio \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDataTree_a8b38e906b287a8968d910bd3c9d1c9ce}\label{classDataTree_a8b38e906b287a8968d910bd3c9d1c9ce}} 
+\index{Data\+Tree@{Data\+Tree}!update\+Node@{update\+Node}}
+\index{update\+Node@{update\+Node}!Data\+Tree@{Data\+Tree}}
+\subsubsection{\texorpdfstring{update\+Node()}{updateNode()}}
+{\footnotesize\ttfamily void Data\+Tree\+::update\+Node (\begin{DoxyParamCaption}\item[{unsigned int}]{a\+Id\+Node,  }\item[{std\+::string}]{a\+Name\+Node,  }\item[{off\+\_\+t}]{a\+Size }\end{DoxyParamCaption})}
+
+
+
+Método para updatear un nodo. 
+
+\hyperlink{classDataTree_a8b38e906b287a8968d910bd3c9d1c9ce}{Data\+Tree\+::update\+Node}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Id\+Node} & es el nodo a updatear \\
+\hline
+{\em a\+Name\+Node} & es el nombre a updatear \\
+\hline
+{\em size} & es el parametro a updatear\\
+\hline
+{\em a\+Id\+Node} & \\
+\hline
+{\em a\+Name\+Node} & \\
+\hline
+{\em a\+Size} & Metodo para updatear un nodo. Primero encontramos el nodo que queremos updatear con su id, y de ahí updateamos los valores. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+datatree.\+h\item 
+datatree.\+cpp\end{DoxyCompactItemize}

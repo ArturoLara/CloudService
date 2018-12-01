@@ -1,0 +1,180 @@
+\hypertarget{classDiskManager}{}\section{Disk\+Manager Class Reference}
+\label{classDiskManager}\index{Disk\+Manager@{Disk\+Manager}}
+
+
+The \hyperlink{classDiskManager}{Disk\+Manager} class será la controladora de los discos y los bloques Con ella veremos como ir guardando y quitando ficheros de los discos.  
+
+
+
+
+{\ttfamily \#include $<$diskmanager.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDiskManager_ae242cbff9557a626ac5a2faa497ad253}{Disk\+Manager} (std\+::string pwd, int num\+Blocks)
+\begin{DoxyCompactList}\small\item\em El constructor de la clase controladora. \end{DoxyCompactList}\item 
+std\+::vector$<$ int $>$ \hyperlink{classDiskManager_a864cc38c2a8b2beb355bec5bf55b8658}{write\+File} (char $\ast$file, off\+\_\+t size\+File)
+\begin{DoxyCompactList}\small\item\em Método para escribir un fichero en disco. \end{DoxyCompactList}\item 
+void \hyperlink{classDiskManager_adc44a3ae9133252903bbb95d974238bc}{read\+File} (char $\ast$file, off\+\_\+t size\+File, std\+::vector$<$ int $>$ vector\+Of\+Blocks)
+\begin{DoxyCompactList}\small\item\em Método para leer un archivo del disco. \end{DoxyCompactList}\item 
+void \hyperlink{classDiskManager_a8992533f7c0308c716c26672e5f315a2}{remove\+File} (std\+::vector$<$ int $>$ vector\+Of\+Blocks)
+\begin{DoxyCompactList}\small\item\em Método para eliminar un fichero del disco. \end{DoxyCompactList}\item 
+void \hyperlink{classDiskManager_a49f4db7b478571d82860bcfe1d63fa6a}{set\+Num\+Blocks} (int new\+Num\+Blocks)
+\begin{DoxyCompactList}\small\item\em Método para especificar el numero de bloques por disco. \end{DoxyCompactList}\item 
+void \hyperlink{classDiskManager_a77f220a41db4ce7d3ec5d2a6b2682307}{format} (int num\+Blocks)
+\begin{DoxyCompactList}\small\item\em Método llamado en el seteo de bloques y más, para escribir los bloques en disco. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \hyperlink{classDiskManager}{Disk\+Manager} class será la controladora de los discos y los bloques Con ella veremos como ir guardando y quitando ficheros de los discos. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classDiskManager_ae242cbff9557a626ac5a2faa497ad253}\label{classDiskManager_ae242cbff9557a626ac5a2faa497ad253}} 
+\index{Disk\+Manager@{Disk\+Manager}!Disk\+Manager@{Disk\+Manager}}
+\index{Disk\+Manager@{Disk\+Manager}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{Disk\+Manager()}{DiskManager()}}
+{\footnotesize\ttfamily Disk\+Manager\+::\+Disk\+Manager (\begin{DoxyParamCaption}\item[{std\+::string}]{pwd,  }\item[{int}]{num\+Blocks }\end{DoxyParamCaption})}
+
+
+
+El constructor de la clase controladora. 
+
+\hyperlink{classDiskManager_ae242cbff9557a626ac5a2faa497ad253}{Disk\+Manager\+::\+Disk\+Manager} El constructor de la clase que va a iniciar los discos y la comunicación.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pwd} & será la direccion total con la que sabremos donde poner los bloques \\
+\hline
+{\em num\+Blocks} & son el numero de bloques totales\\
+\hline
+{\em pwd} & la direccion total \\
+\hline
+{\em num\+Blocks} & el número de bloques Lo primero que haremos será iniciar la comunicación entre maestro y esclavos. Hecho esto, inicializaremos los espacios de bloque por disco \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classDiskManager_a77f220a41db4ce7d3ec5d2a6b2682307}\label{classDiskManager_a77f220a41db4ce7d3ec5d2a6b2682307}} 
+\index{Disk\+Manager@{Disk\+Manager}!format@{format}}
+\index{format@{format}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{format()}{format()}}
+{\footnotesize\ttfamily void Disk\+Manager\+::format (\begin{DoxyParamCaption}\item[{int}]{num\+Blocks }\end{DoxyParamCaption})}
+
+
+
+Método llamado en el seteo de bloques y más, para escribir los bloques en disco. 
+
+\hyperlink{classDiskManager_a77f220a41db4ce7d3ec5d2a6b2682307}{Disk\+Manager\+::format} es el método para el formateo de bloques por disco.
+
+
+\begin{DoxyParams}{Parameters}
+{\em num\+Blocks} & serán los bloques a escribir\\
+\hline
+{\em num\+Blocks} & es el número de bloques Guardaremos los sectores libres con el numero de bloques. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDiskManager_adc44a3ae9133252903bbb95d974238bc}\label{classDiskManager_adc44a3ae9133252903bbb95d974238bc}} 
+\index{Disk\+Manager@{Disk\+Manager}!read\+File@{read\+File}}
+\index{read\+File@{read\+File}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{read\+File()}{readFile()}}
+{\footnotesize\ttfamily void Disk\+Manager\+::read\+File (\begin{DoxyParamCaption}\item[{char $\ast$}]{file,  }\item[{off\+\_\+t}]{size\+File,  }\item[{std\+::vector$<$ int $>$}]{vector\+Of\+Blocks }\end{DoxyParamCaption})}
+
+
+
+Método para leer un archivo del disco. 
+
+\hyperlink{classDiskManager_adc44a3ae9133252903bbb95d974238bc}{Disk\+Manager\+::read\+File} Método para leer un fichero.
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & será el fichero a leer \\
+\hline
+{\em size\+File} & será el tamaño del fichero a leer \\
+\hline
+{\em vector\+Of\+Blocks} & serán los bloques en los que está ese fichero.\\
+\hline
+{\em file} & el fichero \\
+\hline
+{\em size\+File} & el tamaño del fichero \\
+\hline
+{\em vector\+Of\+Blocks} & el numero de bloques Les enviamos a los esclavos que van a tener que leer de sus bloques, y leemos el fichero. De estos vamos a recibir el fichero leido. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDiskManager_a8992533f7c0308c716c26672e5f315a2}\label{classDiskManager_a8992533f7c0308c716c26672e5f315a2}} 
+\index{Disk\+Manager@{Disk\+Manager}!remove\+File@{remove\+File}}
+\index{remove\+File@{remove\+File}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{remove\+File()}{removeFile()}}
+{\footnotesize\ttfamily void Disk\+Manager\+::remove\+File (\begin{DoxyParamCaption}\item[{std\+::vector$<$ int $>$}]{vector\+Of\+Blocks }\end{DoxyParamCaption})}
+
+
+
+Método para eliminar un fichero del disco. 
+
+\hyperlink{classDiskManager_a8992533f7c0308c716c26672e5f315a2}{Disk\+Manager\+::remove\+File} Método para borrar un fichero.
+
+
+\begin{DoxyParams}{Parameters}
+{\em vector\+Of\+Blocks} & son los bloques donde está el fichero\\
+\hline
+{\em vector\+Of\+Blocks} & los bloques donde está el fichero a eliminar Llamamos al save\+Tables después de eliminar un fichero porque el número de bloques libres cambia (aumenta). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDiskManager_a49f4db7b478571d82860bcfe1d63fa6a}\label{classDiskManager_a49f4db7b478571d82860bcfe1d63fa6a}} 
+\index{Disk\+Manager@{Disk\+Manager}!set\+Num\+Blocks@{set\+Num\+Blocks}}
+\index{set\+Num\+Blocks@{set\+Num\+Blocks}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{set\+Num\+Blocks()}{setNumBlocks()}}
+{\footnotesize\ttfamily void Disk\+Manager\+::set\+Num\+Blocks (\begin{DoxyParamCaption}\item[{int}]{new\+Num\+Blocks }\end{DoxyParamCaption})}
+
+
+
+Método para especificar el numero de bloques por disco. 
+
+\hyperlink{classDiskManager_a49f4db7b478571d82860bcfe1d63fa6a}{Disk\+Manager\+::set\+Num\+Blocks} Método para setear el número de bloques.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Num\+Blocks} & son la cantidad nueva de numeros de bloque\\
+\hline
+{\em new\+Num\+Blocks} & el nuevo numero de bloques Se realiza el formateo con el nuevo número de bloques \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDiskManager_a864cc38c2a8b2beb355bec5bf55b8658}\label{classDiskManager_a864cc38c2a8b2beb355bec5bf55b8658}} 
+\index{Disk\+Manager@{Disk\+Manager}!write\+File@{write\+File}}
+\index{write\+File@{write\+File}!Disk\+Manager@{Disk\+Manager}}
+\subsubsection{\texorpdfstring{write\+File()}{writeFile()}}
+{\footnotesize\ttfamily std\+::vector$<$ int $>$ Disk\+Manager\+::write\+File (\begin{DoxyParamCaption}\item[{char $\ast$}]{file,  }\item[{off\+\_\+t}]{size\+File }\end{DoxyParamCaption})}
+
+
+
+Método para escribir un fichero en disco. 
+
+\hyperlink{classDiskManager_a864cc38c2a8b2beb355bec5bf55b8658}{Disk\+Manager\+::write\+File} Método para escribir un fichero en disco.
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & es el fichero a escribir \\
+\hline
+{\em size\+File} & es el tamaño del fichero a escribir \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+used\+Blocks nos devolverá el número de bloques usados
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em file} & el fichero \\
+\hline
+{\em size\+File} & el tamaño del fichero \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+usedblocks los bloques usados Para escribir un fichero en disco, es importante saber que vamos a ir escribiendolo de manera equilibrada en los distintos discos y en bloques. Reservaremos la memoria suficiente que necesitamos por disco para el archivo. enviaremos la distinta información por numero de bloques a los esclavos para saber qué tienen que guardar en qué bloque 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+diskmanager.\+h\item 
+diskmanager.\+cpp\end{DoxyCompactItemize}

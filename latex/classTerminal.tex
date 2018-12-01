@@ -1,0 +1,383 @@
+\hypertarget{classTerminal}{}\section{Terminal Class Reference}
+\label{classTerminal}\index{Terminal@{Terminal}}
+
+
+La clase \hyperlink{classTerminal}{Terminal} Esta clase será la que tenga todos los métodos que ejecuten los comandos pasados por el usuario.  
+
+
+
+
+{\ttfamily \#include $<$terminal.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTerminal_aa448509b5aa1ece53c3d86385655be0e}{Terminal} ()
+\begin{DoxyCompactList}\small\item\em El constructor de la clase. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_ac822276bd11e19db71d1b1410333c3c7}{run} ()
+\begin{DoxyCompactList}\small\item\em Método que carga el árbol y lee/ejecuta comandos. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_aad3c1f2a554ab12d7f27a1fabded2b00}{read\+Command} (\hyperlink{structcommand__t}{command\+\_\+t} $\ast$comando)
+\begin{DoxyCompactList}\small\item\em Método que lee un comando. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a01d8fd8ffa9866b5355e65dc2582dc6a}{run\+Command} (\hyperlink{structcommand__t}{command\+\_\+t} comando)
+\begin{DoxyCompactList}\small\item\em Método para ejecutar un comando. \end{DoxyCompactList}\item 
+command\+\_\+e \hyperlink{classTerminal_a32bc1feca07a366d65f755e74c270766}{get\+Type\+Of\+Command} (char $\ast$comando)
+\begin{DoxyCompactList}\small\item\em Método que según lo que le mandemos, nos dice el comando que es. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a96f57c2e3dacbb0062ea098969d74223}{ls} ()
+\begin{DoxyCompactList}\small\item\em Método que ejecuta el comando ls en nuestro árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_af0648dba26e96c50ac5ea311cda505bc}{cd} (\hyperlink{structcommand__t}{command\+\_\+t} command)
+\begin{DoxyCompactList}\small\item\em Método que ejecuta el comando cd en nuestro árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a5e3706157c23216bcde9a7b68a2f0663}{pwd} ()
+\begin{DoxyCompactList}\small\item\em Método que ejecuta el comando pwd en nuestro árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_accc2ad8c2abcfc1a01fafb6ad9e3c7ea}{mkdir} (\hyperlink{structcommand__t}{command\+\_\+t} command)
+\begin{DoxyCompactList}\small\item\em Método que ejecuta el comando para crear un directorio en nuestro árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a95f79cc087e60f292ab95ae7950c40f9}{rmdir} (\hyperlink{structcommand__t}{command\+\_\+t} command)
+\begin{DoxyCompactList}\small\item\em Método que ejecuta el comando de borrado un directorio. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_aa87d8e5d00abd8fc52d8c5e93439ae9a}{rm} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para borrar un fichero en el árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_ac604ed511dcda771e720d9d746bb76d5}{upload} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para subir al árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_ae71eae23c6e320c30e8f4dd44f59201a}{mv} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para cambiar de nombre un fichero/directorio en nuestro árbol. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_afff07151e9fdceeccb3772b3eff66fd1}{cp} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para copiar un nodo en una posición. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a5a72cb107514fb7c5f4d345c3da4a064}{lls} ()
+\begin{DoxyCompactList}\small\item\em Método para hacer LS en nuestro árbol local. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a185d7b22ac6e3fc5bd55b711926e8089}{lcd} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para CD en nuestro árbol local. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_ac05d53dd80d6dfd7b4e865b1a372969a}{lpwd} ()
+\begin{DoxyCompactList}\small\item\em Método para hacer P\+WD en nuestro árbol local. \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_ae65a3c6d061449b0607e3caa1691b3c7}{download} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para descargar un archivo (no directorio) \end{DoxyCompactList}\item 
+void \hyperlink{classTerminal_a8b0df976ff03c2dfd4cc36a99cad54e2}{touch} (\hyperlink{structcommand__t}{command\+\_\+t} a\+Command)
+\begin{DoxyCompactList}\small\item\em Método para crear un nodo. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+La clase \hyperlink{classTerminal}{Terminal} Esta clase será la que tenga todos los métodos que ejecuten los comandos pasados por el usuario. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classTerminal_aa448509b5aa1ece53c3d86385655be0e}\label{classTerminal_aa448509b5aa1ece53c3d86385655be0e}} 
+\index{Terminal@{Terminal}!Terminal@{Terminal}}
+\index{Terminal@{Terminal}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{Terminal()}{Terminal()}}
+{\footnotesize\ttfamily Terminal\+::\+Terminal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+El constructor de la clase. 
+
+\hyperlink{classTerminal_aa448509b5aa1ece53c3d86385655be0e}{Terminal\+::\+Terminal} El constructor de la terminal Nos inicializa el Árbol y el Controlador del disco (\hyperlink{classDiskManager}{Disk\+Manager}) 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classTerminal_af0648dba26e96c50ac5ea311cda505bc}\label{classTerminal_af0648dba26e96c50ac5ea311cda505bc}} 
+\index{Terminal@{Terminal}!cd@{cd}}
+\index{cd@{cd}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{cd()}{cd()}}
+{\footnotesize\ttfamily void Terminal\+::cd (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método que ejecuta el comando cd en nuestro árbol. 
+
+\hyperlink{classTerminal_af0648dba26e96c50ac5ea311cda505bc}{Terminal\+::cd}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em command} & es a donde vamos a hacer cd (todo el comando entero)\\
+\hline
+{\em a\+Command} & la ruta a la que vamos a ir Método que sirve para movernos a un directorio especificado Abordamos las causas de \char`\"{}cd ..\char`\"{}, \char`\"{}cd nombre\char`\"{}, y cd pasado con / \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_afff07151e9fdceeccb3772b3eff66fd1}\label{classTerminal_afff07151e9fdceeccb3772b3eff66fd1}} 
+\index{Terminal@{Terminal}!cp@{cp}}
+\index{cp@{cp}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{cp()}{cp()}}
+{\footnotesize\ttfamily void Terminal\+::cp (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para copiar un nodo en una posición. 
+
+\hyperlink{classTerminal_afff07151e9fdceeccb3772b3eff66fd1}{Terminal\+::cp} Método para copiar un nodo en una posición.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el comando entero para copiar el nodo y el lugar\\
+\hline
+{\em a\+Command} & es el comando entero para copiar el nodo y el lugar Primero tenemos que saber si acaba en \char`\"{}/\char`\"{} para saber si ese va a ser el nuevo nombre Si hay una \char`\"{}/\char`\"{} significa que el nombre final será el del nodo original Luego iremos actualizando el destino final del nodo a copiar, Con esa información, cogeremos el nodo origen e iremos buscando de manera recursiva ese nodo Lo iremos copiando todo también de forma recursiva Si el nodo origen NO es un directorio, lo escribiremos en disco, ya que \char`\"{}copiamos\char`\"{} uno (creamos) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_ae65a3c6d061449b0607e3caa1691b3c7}\label{classTerminal_ae65a3c6d061449b0607e3caa1691b3c7}} 
+\index{Terminal@{Terminal}!download@{download}}
+\index{download@{download}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{download()}{download()}}
+{\footnotesize\ttfamily void Terminal\+::download (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para descargar un archivo (no directorio) 
+
+\hyperlink{classTerminal_ae65a3c6d061449b0607e3caa1691b3c7}{Terminal\+::download} Método para descargar un archivo (no directorio)
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el archivo a descargar\\
+\hline
+{\em a\+Command} & Lo que le pasamos por comando para el archivo a descargar Buscamos el fichero en el árbol, y si lo encontramos y NO es un dir, procedemos a descargarlo (leyéndolo del disco). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_a32bc1feca07a366d65f755e74c270766}\label{classTerminal_a32bc1feca07a366d65f755e74c270766}} 
+\index{Terminal@{Terminal}!get\+Type\+Of\+Command@{get\+Type\+Of\+Command}}
+\index{get\+Type\+Of\+Command@{get\+Type\+Of\+Command}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{get\+Type\+Of\+Command()}{getTypeOfCommand()}}
+{\footnotesize\ttfamily command\+\_\+e Terminal\+::get\+Type\+Of\+Command (\begin{DoxyParamCaption}\item[{char $\ast$}]{a\+Command\+Array }\end{DoxyParamCaption})}
+
+
+
+Método que según lo que le mandemos, nos dice el comando que es. 
+
+\hyperlink{classTerminal_a32bc1feca07a366d65f755e74c270766}{Terminal\+::get\+Type\+Of\+Command} Método que según lo que le mandemos, nos dice el comando que es.
+
+
+\begin{DoxyParams}{Parameters}
+{\em comando} & es el comando que le pasamos \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+command\+\_\+e es el tipo de comando que devuelve
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command\+Array} & es el comando que le pasamos \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+command\+\_\+e será el tipo de comando que nos devuelve. en este caso, según lo que leamos, nos devolverá el tipo de comando que es. Será el método utilizado cuando leamos un comando 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classTerminal_a185d7b22ac6e3fc5bd55b711926e8089}\label{classTerminal_a185d7b22ac6e3fc5bd55b711926e8089}} 
+\index{Terminal@{Terminal}!lcd@{lcd}}
+\index{lcd@{lcd}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{lcd()}{lcd()}}
+{\footnotesize\ttfamily void Terminal\+::lcd (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para CD en nuestro árbol local. 
+
+\hyperlink{classTerminal_a185d7b22ac6e3fc5bd55b711926e8089}{Terminal\+::lcd} Método para CD en nuestro árbol local.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el lugar donde nos vamos a mover\\
+\hline
+{\em a\+Command} & es el lugar donde nos vamos a mover Realizaremos el CD en nuestro árbol. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_a5a72cb107514fb7c5f4d345c3da4a064}\label{classTerminal_a5a72cb107514fb7c5f4d345c3da4a064}} 
+\index{Terminal@{Terminal}!lls@{lls}}
+\index{lls@{lls}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{lls()}{lls()}}
+{\footnotesize\ttfamily void Terminal\+::lls (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método para hacer LS en nuestro árbol local. 
+
+\hyperlink{classTerminal_a5a72cb107514fb7c5f4d345c3da4a064}{Terminal\+::lls} hacer el ls en nuestro árbol local. \mbox{\Hypertarget{classTerminal_ac05d53dd80d6dfd7b4e865b1a372969a}\label{classTerminal_ac05d53dd80d6dfd7b4e865b1a372969a}} 
+\index{Terminal@{Terminal}!lpwd@{lpwd}}
+\index{lpwd@{lpwd}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{lpwd()}{lpwd()}}
+{\footnotesize\ttfamily void Terminal\+::lpwd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método para hacer P\+WD en nuestro árbol local. 
+
+\hyperlink{classTerminal_ac05d53dd80d6dfd7b4e865b1a372969a}{Terminal\+::lpwd} sacar la direccion pwd en el árbol local. \mbox{\Hypertarget{classTerminal_a96f57c2e3dacbb0062ea098969d74223}\label{classTerminal_a96f57c2e3dacbb0062ea098969d74223}} 
+\index{Terminal@{Terminal}!ls@{ls}}
+\index{ls@{ls}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{ls()}{ls()}}
+{\footnotesize\ttfamily void Terminal\+::ls (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método que ejecuta el comando ls en nuestro árbol. 
+
+\hyperlink{classTerminal_a96f57c2e3dacbb0062ea098969d74223}{Terminal\+::ls} Método que nos lista todos los nodos que hay en donde nos encontremos. \mbox{\Hypertarget{classTerminal_accc2ad8c2abcfc1a01fafb6ad9e3c7ea}\label{classTerminal_accc2ad8c2abcfc1a01fafb6ad9e3c7ea}} 
+\index{Terminal@{Terminal}!mkdir@{mkdir}}
+\index{mkdir@{mkdir}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{mkdir()}{mkdir()}}
+{\footnotesize\ttfamily void Terminal\+::mkdir (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método que ejecuta el comando para crear un directorio en nuestro árbol. 
+
+\hyperlink{classTerminal_accc2ad8c2abcfc1a01fafb6ad9e3c7ea}{Terminal\+::mkdir} Método que ejecuta el comando para crear un directorio en nuestro árbol.
+
+
+\begin{DoxyParams}{Parameters}
+{\em command} & el comando entero para crear el directorio\\
+\hline
+{\em a\+Command} & el comando entero para crear el directorio Lo primero que haremos será controlar si acaba en \char`\"{}/\char`\"{} o en \char`\"{}.\char`\"{}, para poder crear el dir. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_ae71eae23c6e320c30e8f4dd44f59201a}\label{classTerminal_ae71eae23c6e320c30e8f4dd44f59201a}} 
+\index{Terminal@{Terminal}!mv@{mv}}
+\index{mv@{mv}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{mv()}{mv()}}
+{\footnotesize\ttfamily void Terminal\+::mv (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para cambiar de nombre un fichero/directorio en nuestro árbol. 
+
+\hyperlink{classTerminal_ae71eae23c6e320c30e8f4dd44f59201a}{Terminal\+::mv} Método para cambiar de nombre un fichero/directorio en nuestro árbol.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el comando entero para cambiar el nombre.\\
+\hline
+{\em a\+Command} & es el comando entero para cambiar el nombre Tenemos que ver si el comando acaba en \char`\"{}/\char`\"{} o \char`\"{}.\char`\"{}, porque eso cambiará el comportamiento Una vez encontremos el nodo, vamos a updatearlo seǵun sea dir o fichero. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_a5e3706157c23216bcde9a7b68a2f0663}\label{classTerminal_a5e3706157c23216bcde9a7b68a2f0663}} 
+\index{Terminal@{Terminal}!pwd@{pwd}}
+\index{pwd@{pwd}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{pwd()}{pwd()}}
+{\footnotesize\ttfamily void Terminal\+::pwd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método que ejecuta el comando pwd en nuestro árbol. 
+
+\hyperlink{classTerminal_a5e3706157c23216bcde9a7b68a2f0663}{Terminal\+::pwd} Método que saca la dirección actual Para ello, llamaremos al pwd\+Recursive. \mbox{\Hypertarget{classTerminal_aad3c1f2a554ab12d7f27a1fabded2b00}\label{classTerminal_aad3c1f2a554ab12d7f27a1fabded2b00}} 
+\index{Terminal@{Terminal}!read\+Command@{read\+Command}}
+\index{read\+Command@{read\+Command}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{read\+Command()}{readCommand()}}
+{\footnotesize\ttfamily void Terminal\+::read\+Command (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t} $\ast$}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método que lee un comando. 
+
+\hyperlink{classTerminal_aad3c1f2a554ab12d7f27a1fabded2b00}{Terminal\+::read\+Command} Método para leer un comando.
+
+
+\begin{DoxyParams}{Parameters}
+{\em comando} & es el comando a leer\\
+\hline
+{\em a\+Command} & El comando a leer Utilizaremos el tokenizer para saber diferenciar las partes del comando Iremos añadiendo los parametros del comando mientras podamos seguir leyendo. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_aa87d8e5d00abd8fc52d8c5e93439ae9a}\label{classTerminal_aa87d8e5d00abd8fc52d8c5e93439ae9a}} 
+\index{Terminal@{Terminal}!rm@{rm}}
+\index{rm@{rm}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{rm()}{rm()}}
+{\footnotesize\ttfamily void Terminal\+::rm (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para borrar un fichero en el árbol. 
+
+\hyperlink{classTerminal_aa87d8e5d00abd8fc52d8c5e93439ae9a}{Terminal\+::rm} Método para borrar un fichero en el árbol.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el comando entero para borrar\\
+\hline
+{\em a\+Command} & es el comando entero para borrar Tenemos que buscar el fichero a borrar, y de ahí, lo borraremos del disco también. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_a95f79cc087e60f292ab95ae7950c40f9}\label{classTerminal_a95f79cc087e60f292ab95ae7950c40f9}} 
+\index{Terminal@{Terminal}!rmdir@{rmdir}}
+\index{rmdir@{rmdir}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{rmdir()}{rmdir()}}
+{\footnotesize\ttfamily void Terminal\+::rmdir (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método que ejecuta el comando de borrado un directorio. 
+
+\hyperlink{classTerminal_a95f79cc087e60f292ab95ae7950c40f9}{Terminal\+::rmdir} Método que ejecuta el comando de borrado un directorio.
+
+
+\begin{DoxyParams}{Parameters}
+{\em command} & es el comando para borrar el directorio\\
+\hline
+{\em a\+Command} & es el comando para borrar el directorio Primero tenemos que ver si estamos en ese directorio Una vez sabemos cual es el directorio, tenemos que ver si está vacío, o si es un fichero. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_ac822276bd11e19db71d1b1410333c3c7}\label{classTerminal_ac822276bd11e19db71d1b1410333c3c7}} 
+\index{Terminal@{Terminal}!run@{run}}
+\index{run@{run}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily void Terminal\+::run (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Método que carga el árbol y lee/ejecuta comandos. 
+
+\hyperlink{classTerminal_ac822276bd11e19db71d1b1410333c3c7}{Terminal\+::run} Método que carga el árbol y lee/ejecuta comandos Este método es el, por así decirlo, el que inicia todo. Carga el árbol, y es el que va a ir leyendo y ejecutando los comandos. \mbox{\Hypertarget{classTerminal_a01d8fd8ffa9866b5355e65dc2582dc6a}\label{classTerminal_a01d8fd8ffa9866b5355e65dc2582dc6a}} 
+\index{Terminal@{Terminal}!run\+Command@{run\+Command}}
+\index{run\+Command@{run\+Command}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{run\+Command()}{runCommand()}}
+{\footnotesize\ttfamily void Terminal\+::run\+Command (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para ejecutar un comando. 
+
+\hyperlink{classTerminal_a01d8fd8ffa9866b5355e65dc2582dc6a}{Terminal\+::run\+Command} Método para ejecutar un comando.
+
+
+\begin{DoxyParams}{Parameters}
+{\em comando} & es el comando a ejecutar\\
+\hline
+{\em a\+Command} & es el comando a ejecutar Según el comando que le pasemos, ejecutará en consola uno u otro. Hemos puesto control de errores en el mismo \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_a8b0df976ff03c2dfd4cc36a99cad54e2}\label{classTerminal_a8b0df976ff03c2dfd4cc36a99cad54e2}} 
+\index{Terminal@{Terminal}!touch@{touch}}
+\index{touch@{touch}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{touch()}{touch()}}
+{\footnotesize\ttfamily void Terminal\+::touch (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para crear un nodo. 
+
+\hyperlink{classTerminal_a8b0df976ff03c2dfd4cc36a99cad54e2}{Terminal\+::touch} método para crear un nodo.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el comando para la creación\\
+\hline
+{\em a\+Command} & el comando para la creación Si no existe el nodo donde queremos crearlo, lo creamos. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classTerminal_ac604ed511dcda771e720d9d746bb76d5}\label{classTerminal_ac604ed511dcda771e720d9d746bb76d5}} 
+\index{Terminal@{Terminal}!upload@{upload}}
+\index{upload@{upload}!Terminal@{Terminal}}
+\subsubsection{\texorpdfstring{upload()}{upload()}}
+{\footnotesize\ttfamily void Terminal\+::upload (\begin{DoxyParamCaption}\item[{\hyperlink{structcommand__t}{command\+\_\+t}}]{a\+Command }\end{DoxyParamCaption})}
+
+
+
+Método para subir al árbol. 
+
+\hyperlink{classTerminal_ac604ed511dcda771e720d9d746bb76d5}{Terminal\+::upload} Métdo para subir al árbol.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Command} & es el comando entero que nos determinará qué se subirá\\
+\hline
+{\em a\+Command} & el comando entero que nos determinará qué se subirá Si donde buscamos no existe ese nodo, procedemos a subirlo. Para ello también tendremos que escribirlo en el disco. Si es un directorio, como consecuencia tendremos que ir copiando todo. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+terminal.\+h\item 
+terminal.\+cpp\end{DoxyCompactItemize}
