@@ -3,7 +3,13 @@
 #include <cstring>
 #include <string>
 #include <iostream>
-
+/*!
+ * \brief DiskManager::DiskManager El constructor de la clase que va a iniciar los discos y la comunicación
+ * \param pwd la direccion total
+ * \param numBlocks el número de bloques
+ * Lo primero que haremos será iniciar la comunicación entre maestro y esclavos.
+ * Hecho esto, inicializaremos los espacios de bloque por disco
+ */
 DiskManager::DiskManager(std::string pwd, int numBlocks)
 {
     this->numBlocks = numBlocks;
@@ -49,7 +55,11 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
 
     fclose(sectorsFile);
 }
-
+/*!
+ * \brief DiskManager::format es el método para el formateo de bloques por disco
+ * \param numBlocks es el número de bloques
+ * Guardaremos los sectores libres con el numero de bloques.
+ */
 void DiskManager::format(int numBlocks)
 {
     std::string freeSectors = pwdLocal;
@@ -65,7 +75,16 @@ void DiskManager::format(int numBlocks)
 
     fclose(sectorsFile);
 }
-
+/*!
+ * \brief DiskManager::writeFile Método para escribir un fichero en disco
+ * \param file el fichero
+ * \param sizeFile el tamaño del fichero
+ * \return usedblocks los bloques usados
+ * Para escribir un fichero en disco, es importante saber que vamos a ir escribiendolo de manera equilibrada
+ * en los distintos discos y en bloques.
+ * Reservaremos la memoria suficiente que necesitamos por disco para el archivo.
+ * enviaremos la distinta información por numero de bloques a los esclavos para saber qué tienen que guardar en qué bloque
+ */
 std::vector<int> DiskManager::writeFile(char* file, off_t sizeFile)
 {
     std::vector<int> usedBlocks;
@@ -115,7 +134,14 @@ std::vector<int> DiskManager::writeFile(char* file, off_t sizeFile)
     return usedBlocks;
 
 }
-
+/*!
+ * \brief DiskManager::readFile Método para leer un fichero
+ * \param file el fichero
+ * \param sizeFile el tamaño del fichero
+ * \param vectorOfBlocks el numero de bloques
+ * Les enviamos a los esclavos que van a tener que leer de sus bloques, y leemos el fichero.
+ * De estos vamos a recibir el fichero leido.
+ */
 void DiskManager::readFile(char* file, off_t sizeFile, std::vector<int> vectorOfBlocks)
 {
     char* normalizedData = (char*)malloc(vectorOfBlocks.size()*sizeOfBlock);
@@ -139,7 +165,11 @@ void DiskManager::readFile(char* file, off_t sizeFile, std::vector<int> vectorOf
     free(dataBock);
     free(normalizedData);
 }
-
+/*!
+ * \brief DiskManager::saveTables Método para ir guardando los id del bloques libres en un archivo
+ * Vamos a ver cuales son los sectores libres y esos los vamos a ir añadiendo.
+ * Más tarde iremos escribiendo ese número de bloques libres (ID) en un fichero.
+ */
 void DiskManager::saveTables()
 {
 
@@ -158,14 +188,22 @@ void DiskManager::saveTables()
     }
     fclose(sectorsFile);
 }
-
+/*!
+ * \brief DiskManager::setNumBlocks Método para setear el número de bloques
+ * \param newNumBlocks el nuevo numero de bloques
+ * Se realiza el formateo con el nuevo número de bloques
+ */
 void DiskManager::setNumBlocks(int newNumBlocks)
 {
     numBlocks = newNumBlocks;
 
     format(newNumBlocks*numDisks);
 }
-
+/*!
+ * \brief DiskManager::removeFile Método para borrar un fichero
+ * \param vectorOfBlocks los bloques donde está el fichero a eliminar
+ * Llamamos al saveTables después de eliminar un fichero porque el número de bloques libres cambia (aumenta).
+ */
 void DiskManager::removeFile(std::vector<int> vectorOfBlocks)
 {
     for(int block : vectorOfBlocks)

@@ -11,10 +11,10 @@
 
 #include "node.h"
 
-const unsigned int INITIAL_NODE_ID = 0; /**< El id del nodo inicial> */
-const unsigned int INITIAL_DEEP_LEVEL = 0; /**< La profundidad incial> */
-const off_t SIZE_OF_DIRECTORY = 4096; /**< El tamaño del direcctorio> */
-const int SIZE_OF_BLOCK = 46; /**< El tamaño del bloque> */
+const unsigned int INITIAL_NODE_ID = 0; /**<El id del nodo inicial> */
+const unsigned int INITIAL_DEEP_LEVEL = 0; /**<La profundidad incial> */
+const off_t SIZE_OF_DIRECTORY = 4096; /**<El tamaño del direcctorio> */
+const int SIZE_OF_BLOCK = 46; /**<el tamaño del bloque> */
 /*! \brief La clase DataTree es la clase del árbol */
 /*!
     La clase que vamos a utilizar para nuestro árbol.

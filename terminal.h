@@ -10,8 +10,8 @@
 #include "datatree.h"
 #include "diskmanager.h"
 
-/*!El número de bloques que tendrá nuestro disco*/
-const int numBlocks = 32000;
+
+const int numBlocks = 32000; /**<El numero de bloques que tendrá nuestro disco >*/
 /*! Un tipo enum para los comandos
      *  Esto nos va a servir para saber qué comando inserta el usuario por consola
      * en nuestra aplicación. Se pueden ir añadiendo según qué comandos queramos
@@ -39,15 +39,15 @@ enum command_e
 /*! \brief La estructura que define el comando
  La estructura para poder escribir y recibir los comandos en consola*/
 typedef struct command_t{
-    command_e type; /**< el tipo de comando que recibiremos> */
-    std::vector<char*>* args;  /** < El comando en sí (el input)>*/
+    command_e type; /**<el tipo de comando que recibiremos> */
+    std::vector<char*>* args;  /**<El comando en sí (el input)>*/
 
     //!Método para limpiar la consola de texto
     /*! Este método nos limpiará la consola y el comando*/
     void clean()
     {
         type = command_e::NO_COMMAND; /** <ponemos el comando como si no tuvieramos>*/
-        args->clear(); /** <Vaciamos el input que tengamos> */
+        args->clear(); /**<Vaciamos el input que tengamos> */
     }
 }command_t;
 /*! \brief La clase Terminal
@@ -57,9 +57,9 @@ pasados por el usuario
 class Terminal{
 
 private:
-    DataTree* tree; /**< El árbol a utilizar> */
-    DiskManager* raid; /** <El disk manager que controlará los discos> */
-    bool exit=false; /** <para saber cuando acabamos> */
+    DataTree* tree; /**<El árbol a utilizar> */
+    DiskManager* raid; /**<El disk manager que controlará los discos> */
+    bool exit=false; /**<para saber cuando acabamos> */
 
     /// \brief Método para no poder hacer ciertas funciones en un mismo directorio
     /// \param OriginDirectory el nodo origen

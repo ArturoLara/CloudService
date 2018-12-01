@@ -646,7 +646,8 @@ void Terminal::mv(command_t aCommand)
 /*!
  * \brief Terminal::cp Método para copiar un nodo en una posición
  * \param aCommand es el comando entero para copiar el nodo y el lugar
- * Primero tenemos que saber si acaba en "/" para saber el nodo final
+ * Primero tenemos que saber si acaba en "/" para saber si ese va a ser el nuevo nombre
+ * Si hay una "/" significa que el nombre final será el del nodo original
  * Luego iremos actualizando el destino final del nodo a copiar,
  * Con esa información, cogeremos el nodo origen e iremos buscando de manera recursiva ese nodo
  * Lo iremos copiando todo también de forma recursiva
