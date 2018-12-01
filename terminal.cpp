@@ -174,7 +174,7 @@ node_t* Terminal::findNodeAtDirectory(node_t* directoryNode, std::string nodeNam
  * Este método nos va a copiar un directorio (con todos sus hijos, de manera recursiva)
  * en el directorio especificado.
  * Como estamos copiando, significa que necesitamos espacio y escribirlo en disco
- * Con lo que iremos escrribiendo el nodo que vayamos copiando
+ * Con lo que iremos escribiendo el nodo que vayamos copiando
  */
 void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirectory, std::string newNameDirectory)
 {
@@ -194,7 +194,11 @@ void Terminal::copyDirectoryRecursive(node_t* OriginDirectory, node_t* destDirec
         copyDirectoryRecursive(node, destDirectory, node->nameNode);
     }
 }
-
+/*!
+ * \brief Terminal::copyLocalDirectoryRecursive Método parecido al cp pero del Local
+ * \param destDirectory es el directorio destino
+ * Mientras vaya habiendo directorios, vamos a ir copiándolos y añadiéndolos al árbol
+ */
 void Terminal::copyLocalDirectoryRecursive(node_t* destDirectory)
 {
     std::string token;
@@ -227,7 +231,12 @@ void Terminal::copyLocalDirectoryRecursive(node_t* destDirectory)
         }
     }
 }
-
+/*!
+ * \brief Terminal::getOutFromCommand Método para recibir la salida del comando (output)
+ * \param cmd es el comando del que queremos obtener la salida
+ * \return data es el output
+ * Vamos a ir añadiendo al buffer cada "parámetro" del comando
+ */
 std::string Terminal::getOutFromCommand(std::string cmd)
 {
     std::string data;
@@ -250,6 +259,14 @@ std::string Terminal::getOutFromCommand(std::string cmd)
     }
     return data;
 }
+/*!
+ * \brief Terminal::findSubdirectoryDependency Método para prueba de errores
+ * \param OriginDirectory es el directorio origen
+ * \param destDirectory es el directorio destino
+ * \return dependency es el valor de si se puede o no
+ * Este método es un control de errores para poder o no hacer ciertas funciones
+ *  en un mismo directorio
+ */
 bool Terminal::findSubdirectoryDependency(node_t* OriginDirectory, node_t* destDirectory)
 {
     bool dependency = false;
@@ -266,7 +283,13 @@ bool Terminal::findSubdirectoryDependency(node_t* OriginDirectory, node_t* destD
 
     return dependency;
 }
-
+/*!
+ * \brief Terminal::findByPath Método para encontrar el path
+ * \param command es el parámetro pasado
+ * \return funcion recursiva
+ * Método que llama al método recursivo de encontrar la path según hayamos escrito "/"
+ *  o no al final
+ */
 node_t* Terminal::findByPath(char *command){
     bool dirFlag = false;
     if(!strncmp(&(command[strlen(command)-1]), "/", 1))
@@ -283,7 +306,17 @@ node_t* Terminal::findByPath(char *command){
     }
 
 }
-
+/*!
+ * \brief Terminal::findByPathRecursive El verdadero  método para encontrar el path
+ * \param path es el parametro
+ * \param actualDirectory el directorio en el que nos encontramos en ese momento
+ * \param index para saber si estamos en "/"
+ * \param dirFlag para saber si es un directorio
+ * \return un nodo, el target o el actual, el último nodo (toda la path hasta él)
+ * Con este método vamos a ir comprobando si donde estamos es donde queremos llegar
+ * Si no lo es, vamos a ir llamándo a la función recursiva y vamos a
+ * ir actualizando el path cada vez.
+ */
 node_t* Terminal::findByPathRecursive(char *path, node_t* actualDirectory, int index, bool dirFlag){
 
 
@@ -333,7 +366,13 @@ node_t* Terminal::findByPathRecursive(char *path, node_t* actualDirectory, int i
         }
     }
 }
-
+/*!
+ * \brief Terminal::pwdRecursive Método para sacar la dirección actual recursivamente
+ * \param aNode el nodo que vamos a ir pasando para encontrar la dirección
+ * \return directory es la dirección total.
+ * Con este método vamos a ir añadiendo una "/" cada vez que estemos en un dir
+ * De esta manera, podremos encontrar la path completa "dirA/dirB/dirC"
+ */
 std::string Terminal::pwdRecursive(node_t* aNode){
 
     std::string directory;
@@ -347,12 +386,19 @@ std::string Terminal::pwdRecursive(node_t* aNode){
     return directory;
 
 }
-
+/*!
+ * \brief Terminal::pwd Método que saca la dirección actual
+ * Para ello, llamaremos al pwdRecursive
+ */
 void Terminal::pwd(){
     std::cout << std::endl << pwdRecursive(this->tree->getActualDirectoryNode()) << std::endl;
 }
 
-
+/*!
+ * \brief Terminal::mkdir Método que ejecuta el comando para crear un directorio en nuestro árbol
+ * \param aCommand el comando entero para crear el directorio
+ * Lo primero que haremos será controlar si acaba en "/" o en ".", para poder crear el dir.
+ */
 void Terminal::mkdir(command_t aCommand){
     if(aCommand.args->size() == 2)
     {
@@ -379,7 +425,12 @@ void Terminal::mkdir(command_t aCommand){
     }
 
 }
-
+/*!
+ * \brief Terminal::rmdir Método que ejecuta el comando de borrado un directorio
+ * \param aCommand es el comando para borrar el directorio
+ * Primero tenemos que ver si estamos en ese directorio
+ * Una vez sabemos cual es el directorio, tenemos que ver si está vacío, o si es un fichero.
+ */
 void Terminal::rmdir(command_t aCommand){
     if(aCommand.args->size() == 2)
     {
@@ -421,7 +472,11 @@ void Terminal::rmdir(command_t aCommand){
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::rm Método para borrar un fichero en el árbol
+ * \param aCommand es el comando entero para borrar
+ * Tenemos que buscar el fichero a borrar, y de ahí, lo borraremos del disco también.
+ */
 void Terminal::rm(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
@@ -449,7 +504,13 @@ void Terminal::rm(command_t aCommand)
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::upload Métdo para subir al árbol
+ * \param aCommand el comando entero que nos determinará qué se subirá
+ * Si donde buscamos no existe ese nodo, procedemos a subirlo.
+ * Para ello también tendremos que escribirlo en el disco.
+ * Si es un directorio, como consecuencia tendremos que ir copiando todo.
+ */
 void Terminal::upload(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
@@ -498,7 +559,12 @@ void Terminal::upload(command_t aCommand)
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::download Método para descargar un archivo (no directorio)
+ * \param aCommand Lo que le pasamos por comando para el archivo a descargar
+ * Buscamos el fichero en el árbol, y si lo encontramos y NO es un dir,
+ * procedemos a descargarlo (leyéndolo del disco).
+ */
 void Terminal::download(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
@@ -528,7 +594,13 @@ void Terminal::download(command_t aCommand)
         }
     }
 }
-
+/*!
+ * \brief Terminal::mv Método para cambiar de nombre un fichero/directorio en nuestro árbol
+ * \param aCommand es el comando entero para cambiar el nombre
+ * Tenemos que ver si el comando acaba en "/" o ".", porque eso cambiará el comportamiento
+ * Una vez encontremos el nodo, vamos a updatearlo seǵun sea dir o fichero.
+ *
+ */
 void Terminal::mv(command_t aCommand)
 {
     if(aCommand.args->size() == 3)
@@ -571,7 +643,15 @@ void Terminal::mv(command_t aCommand)
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::cp Método para copiar un nodo en una posición
+ * \param aCommand es el comando entero para copiar el nodo y el lugar
+ * Primero tenemos que saber si acaba en "/" para saber el nodo final
+ * Luego iremos actualizando el destino final del nodo a copiar,
+ * Con esa información, cogeremos el nodo origen e iremos buscando de manera recursiva ese nodo
+ * Lo iremos copiando todo también de forma recursiva
+ * Si el nodo origen NO es un directorio, lo escribiremos en disco, ya que "copiamos" uno (creamos)
+ */
 void Terminal::cp(command_t aCommand)
 {
 
@@ -660,12 +740,18 @@ void Terminal::cp(command_t aCommand)
     }
 
 }
-
+/*!
+ * \brief Terminal::lls hacer el ls en nuestro árbol local
+ */
 void Terminal::lls()
 {
     system("ls");
 }
-
+/*!
+ * \brief Terminal::lcd Método para CD en nuestro árbol local
+ * \param aCommand es el lugar donde nos vamos a mover
+ * Realizaremos el CD en nuestro árbol.
+ */
 void Terminal::lcd(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
@@ -678,12 +764,18 @@ void Terminal::lcd(command_t aCommand)
         std::cout << "Invalid number of arguments" << std::endl;
     }
 }
-
+/*!
+ * \brief Terminal::lpwd sacar la direccion pwd en el árbol local
+ */
 void Terminal::lpwd()
 {
     system("pwd");
 }
-
+/*!
+ * \brief Terminal::touch método para crear un nodo
+ * \param aCommand el comando para la creación
+ * Si no existe el nodo donde queremos crearlo, lo creamos.
+ */
 void Terminal::touch(command_t aCommand)
 {
     if(aCommand.args->size() == 2)
@@ -713,7 +805,11 @@ void Terminal::touch(command_t aCommand)
     }
 }
 
-
+/*!
+ * \brief Terminal::run Método que carga el árbol y lee/ejecuta comandos
+ * Este método es el, por así decirlo, el que inicia todo.
+ * Carga el árbol, y es el que va a ir leyendo y ejecutando los comandos.
+ */
 void Terminal::run(){
     command_t command;
     command.args = new std::vector<char*>();
@@ -728,6 +824,12 @@ void Terminal::run(){
     }
     tree->saveTree();
 }
+/*!
+ * \brief Terminal::readCommand Método para leer un comando
+ * \param aCommand El comando a leer
+ * Utilizaremos el tokenizer para saber diferenciar las partes del comando
+ * Iremos añadiendo los parametros del comando mientras podamos seguir leyendo.
+ */
 void Terminal::readCommand(command_t* aCommand){
     char * line= new char [1024];
     char spacer[3]=" \n";
@@ -742,7 +844,13 @@ void Terminal::readCommand(command_t* aCommand){
         aCommand->args->push_back(token);
     }
 }
-
+/*!
+ * \brief Terminal::getTypeOfCommand Método que según lo que le mandemos, nos dice el comando que es
+ * \param aCommandArray es el comando que le pasamos
+ * \return command_e será el tipo de comando que nos devuelve.
+ * en este caso, según lo que leamos, nos devolverá el tipo de comando que es.
+ * Será el método utilizado cuando leamos un comando
+ */
 command_e Terminal::getTypeOfCommand(char* aCommandArray)
 {
     if(aCommandArray != NULL)
@@ -780,6 +888,12 @@ command_e Terminal::getTypeOfCommand(char* aCommandArray)
     }
     return command_e::NO_COMMAND;
 }
+/*!
+ * \brief Terminal::runCommand Método para ejecutar un comando
+ * \param aCommand es el comando a ejecutar
+ * Según el comando que le pasemos, ejecutará en consola uno u otro.
+ * Hemos puesto control de errores en el mismo
+ */
 void Terminal::runCommand(command_t aCommand)
 {
     switch(aCommand.type)

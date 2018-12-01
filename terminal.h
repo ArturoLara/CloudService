@@ -73,10 +73,10 @@ private:
     std::string pwdRecursive(node_t* node);
 
     /// \brief Método para encontrar el path
-    /// \param command
-    /// \param actualDirectory
-    /// \param index
-    /// \param dirFlag
+    /// \param command es el parametro
+    /// \param actualDirectory el directorio en el que nos encontramos en ese momento
+    /// \param index para saber si estamos en "/"
+    /// \param dirFlag para saber si es un directorio
     /// \return node_t el último nodo (toda la path hasta él)
     node_t* findByPathRecursive(char* command, node_t* actualDirectory, int index, bool dirFlag);
 
