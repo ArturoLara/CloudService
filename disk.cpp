@@ -6,14 +6,21 @@
 #include "/usr/include/mpi/mpi.h"
 
 const off_t sizeOfBlock = 1024;
-
+/*!
+ * \brief function_e es de tipo enum para saber el modo del disco.
+ * */
 enum function_e
 {
     WRITE = 1,
     READ = 2
 };
 
-
+/*!
+ * \brief writeBlock Función para escribir en un bloque con MPI
+ * \param idDisk
+ * writeBlock va a comunicarse con el padre, y recibir donde tiene que escribir.
+ * buscará el bloque con su id, y lo escribirá
+ */
 void writeBlock(int idDisk)
 {
     int blockID;
@@ -43,7 +50,12 @@ void writeBlock(int idDisk)
     }
     free(block);
 }
-
+/*!
+ * \brief readBlock Es una función muy parecida a write block
+ * \param idDisk
+ * Va a recibir el id del disco y al comunicarse con el padre
+ * va a leer del disco, el bloque que se le indica
+ */
 void readBlock(int idDisk)
 {
     MPI_Status status;
