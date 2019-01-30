@@ -1,0 +1,125 @@
+\hypertarget{structnode__t}{}\section{node\+\_\+t Struct Reference}
+\label{structnode__t}\index{node\+\_\+t@{node\+\_\+t}}
+
+
+La estructura principal del Nodo La estructura básica de nodos que utilizará nuestro árbol Tiene distintos parámetros.  
+
+
+
+
+{\ttfamily \#include $<$node.\+h$>$}
+
+
+
+Collaboration diagram for node\+\_\+t\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{structnode__t__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structnode__t_a91cf3f91cff0e714a148090202a9cb47}{node\+\_\+t} (unsigned int \hyperlink{structnode__t_a3d32f150f8a692d43e545b8b53eb856e}{id}, \hyperlink{structnode__t}{node\+\_\+t} $\ast$\hyperlink{structnode__t_a677649fc87677fd268566458fabf99db}{father\+Node}, std\+::string \hyperlink{structnode__t_a202c45b136037819d05bdd73728de399}{name\+Node}, unsigned int actual\+Deep\+Level, bool directory, off\+\_\+t \hyperlink{structnode__t_a692153fd99c77b0a2a2e06571abd41f2}{size})
+\begin{DoxyCompactList}\small\item\em El constructor del nodo. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \hyperlink{structnode__t_a3d32f150f8a692d43e545b8b53eb856e}{id}
+\item 
+\hyperlink{structnode__t}{node\+\_\+t} $\ast$ \hyperlink{structnode__t_a677649fc87677fd268566458fabf99db}{father\+Node}
+\item 
+std\+::string \hyperlink{structnode__t_a202c45b136037819d05bdd73728de399}{name\+Node}
+\item 
+std\+::vector$<$ \hyperlink{structnode__t}{node\+\_\+t} $\ast$ $>$ \hyperlink{structnode__t_a7087dffd0a04067c1a713e9c35df15cc}{child\+Nodes}
+\item 
+unsigned int \hyperlink{structnode__t_ae2fe752b52c2d4782ebbb6a9a5f28d49}{deep\+Level}
+\item 
+bool \hyperlink{structnode__t_a86637ae4679009b157317c3fa701e148}{directory\+Flag}
+\item 
+off\+\_\+t \hyperlink{structnode__t_a692153fd99c77b0a2a2e06571abd41f2}{size}
+\item 
+time\+\_\+t \hyperlink{structnode__t_ad505eaabfc4f22a4a982c80403e26f13}{last\+Change}
+\item 
+std\+::vector$<$ int $>$ \hyperlink{structnode__t_aabfde8107272be30b155bcff86a486de}{vector\+Of\+Blocks\+Id}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+La estructura principal del Nodo La estructura básica de nodos que utilizará nuestro árbol Tiene distintos parámetros. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structnode__t_a91cf3f91cff0e714a148090202a9cb47}\label{structnode__t_a91cf3f91cff0e714a148090202a9cb47}} 
+\index{node\+\_\+t@{node\+\_\+t}!node\+\_\+t@{node\+\_\+t}}
+\index{node\+\_\+t@{node\+\_\+t}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{node\+\_\+t()}{node\_t()}}
+{\footnotesize\ttfamily node\+\_\+t\+::node\+\_\+t (\begin{DoxyParamCaption}\item[{unsigned int}]{id,  }\item[{\hyperlink{structnode__t}{node\+\_\+t} $\ast$}]{father\+Node,  }\item[{std\+::string}]{name\+Node,  }\item[{unsigned int}]{actual\+Deep\+Level,  }\item[{bool}]{directory,  }\item[{off\+\_\+t}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+El constructor del nodo. 
+
+El constructor tomará los valores de la estructura por parámetros y los inicializará. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{structnode__t_a7087dffd0a04067c1a713e9c35df15cc}\label{structnode__t_a7087dffd0a04067c1a713e9c35df15cc}} 
+\index{node\+\_\+t@{node\+\_\+t}!child\+Nodes@{child\+Nodes}}
+\index{child\+Nodes@{child\+Nodes}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{child\+Nodes}{childNodes}}
+{\footnotesize\ttfamily std\+::vector$<$\hyperlink{structnode__t}{node\+\_\+t}$\ast$$>$ node\+\_\+t\+::child\+Nodes}
+
+El vector con los hijos del nodo actual$>$ \mbox{\Hypertarget{structnode__t_ae2fe752b52c2d4782ebbb6a9a5f28d49}\label{structnode__t_ae2fe752b52c2d4782ebbb6a9a5f28d49}} 
+\index{node\+\_\+t@{node\+\_\+t}!deep\+Level@{deep\+Level}}
+\index{deep\+Level@{deep\+Level}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{deep\+Level}{deepLevel}}
+{\footnotesize\ttfamily unsigned int node\+\_\+t\+::deep\+Level}
+
+La profundidad del nodo $>$ \mbox{\Hypertarget{structnode__t_a86637ae4679009b157317c3fa701e148}\label{structnode__t_a86637ae4679009b157317c3fa701e148}} 
+\index{node\+\_\+t@{node\+\_\+t}!directory\+Flag@{directory\+Flag}}
+\index{directory\+Flag@{directory\+Flag}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{directory\+Flag}{directoryFlag}}
+{\footnotesize\ttfamily bool node\+\_\+t\+::directory\+Flag}
+
+Booleano para saber si el nodo es un directorio o un archivo$>$ \mbox{\Hypertarget{structnode__t_a677649fc87677fd268566458fabf99db}\label{structnode__t_a677649fc87677fd268566458fabf99db}} 
+\index{node\+\_\+t@{node\+\_\+t}!father\+Node@{father\+Node}}
+\index{father\+Node@{father\+Node}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{father\+Node}{fatherNode}}
+{\footnotesize\ttfamily \hyperlink{structnode__t}{node\+\_\+t}$\ast$ node\+\_\+t\+::father\+Node}
+
+El puntero al nodo Padre del nodo actual$>$ \mbox{\Hypertarget{structnode__t_a3d32f150f8a692d43e545b8b53eb856e}\label{structnode__t_a3d32f150f8a692d43e545b8b53eb856e}} 
+\index{node\+\_\+t@{node\+\_\+t}!id@{id}}
+\index{id@{id}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily unsigned int node\+\_\+t\+::id}
+
+El id del nodo$>$ \mbox{\Hypertarget{structnode__t_ad505eaabfc4f22a4a982c80403e26f13}\label{structnode__t_ad505eaabfc4f22a4a982c80403e26f13}} 
+\index{node\+\_\+t@{node\+\_\+t}!last\+Change@{last\+Change}}
+\index{last\+Change@{last\+Change}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{last\+Change}{lastChange}}
+{\footnotesize\ttfamily time\+\_\+t node\+\_\+t\+::last\+Change}
+
+La última modificacion realizada en ese nodo$>$ \mbox{\Hypertarget{structnode__t_a202c45b136037819d05bdd73728de399}\label{structnode__t_a202c45b136037819d05bdd73728de399}} 
+\index{node\+\_\+t@{node\+\_\+t}!name\+Node@{name\+Node}}
+\index{name\+Node@{name\+Node}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{name\+Node}{nameNode}}
+{\footnotesize\ttfamily std\+::string node\+\_\+t\+::name\+Node}
+
+El nombre del nodo$>$ \mbox{\Hypertarget{structnode__t_a692153fd99c77b0a2a2e06571abd41f2}\label{structnode__t_a692153fd99c77b0a2a2e06571abd41f2}} 
+\index{node\+\_\+t@{node\+\_\+t}!size@{size}}
+\index{size@{size}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{size}{size}}
+{\footnotesize\ttfamily off\+\_\+t node\+\_\+t\+::size}
+
+El tamaño del nodo$>$ \mbox{\Hypertarget{structnode__t_aabfde8107272be30b155bcff86a486de}\label{structnode__t_aabfde8107272be30b155bcff86a486de}} 
+\index{node\+\_\+t@{node\+\_\+t}!vector\+Of\+Blocks\+Id@{vector\+Of\+Blocks\+Id}}
+\index{vector\+Of\+Blocks\+Id@{vector\+Of\+Blocks\+Id}!node\+\_\+t@{node\+\_\+t}}
+\subsubsection{\texorpdfstring{vector\+Of\+Blocks\+Id}{vectorOfBlocksId}}
+{\footnotesize\ttfamily std\+::vector$<$int$>$ node\+\_\+t\+::vector\+Of\+Blocks\+Id}
+
+Un vector con el bloque donde se encuentra el nodo$>$ 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+node.\+h\end{DoxyCompactItemize}

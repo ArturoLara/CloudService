@@ -37,7 +37,7 @@ void writeBlock(int idDisk)
     MPI_Recv(&blockID, 1, MPI_INT, 0,MPI_ANY_TAG, parent,&status );
     MPI_Recv(block, sizeOfBlock, MPI_CHAR, 0,MPI_ANY_TAG, parent,&status );
 
-    std::string diskName = "disco";
+    std::string diskName = "/home/ubuntu/MarioCavero_ArturoLara/disco";
     diskName += std::to_string(idDisk);
     diskName += ".dat";
 
@@ -70,7 +70,7 @@ void readBlock(int idDisk)
 
     MPI_Recv(&blockID, 1, MPI_INT, 0,MPI_ANY_TAG, parent,&status );
 
-    std::string diskName = "disco";
+    std::string diskName = "/home/ubuntu/MarioCavero_ArturoLara/disco";
     diskName += std::to_string(idDisk);
     diskName += ".dat";
 
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
     MPI_Recv(&idDisk, 1, MPI_INT, 0, MPI_ANY_TAG, parent, &status);
 
-    std::string diskName = "disco";
+    std::string diskName = "/home/ubuntu/MarioCavero_ArturoLara/disco";
     diskName += std::to_string(idDisk);
     diskName += ".dat";
 
