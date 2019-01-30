@@ -16,12 +16,14 @@ DiskManager::DiskManager(std::string pwd, int numBlocks)
     pwdLocal = pwd;
 
     int rank=0;
+    int size=0;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     for(int i = 0; i < numDisks; i++)
     {
         MPI_Comm* commDisk=new MPI_Comm[1];
-        MPI_Comm_spawn("disk", MPI_ARGV_NULL, 1, MPI_INFO_NULL, 0, MPI_COMM_SELF, commDisk, MPI_ERRCODES_IGNORE);
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+        MPI_Comm_spawn("/home/ubuntu/MarioCavero_ArturoLara/bin/disk", MPI_ARGV_NULL, 1, MPI_INFO_NULL, 0, MPI_COMM_SELF, commDisk, MPI_ERRCODES_IGNORE);
         MPI_Send(&i, 1, MPI_INT, 0, 0, *commDisk);
         diskVector.push_back(commDisk);
     }

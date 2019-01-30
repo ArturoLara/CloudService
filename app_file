@@ -1,0 +1,2 @@
+-np 1 --hostfile hosts.txt /home/ubuntu/MarioCavero_ArturoLara/bin/CloudService
+#
