@@ -609,13 +609,13 @@ void Terminal::mv(command_t aCommand)
         std::string nodeNameDest(aCommand.args->at(1));
         node_t* targetNode = NULL;
 
-        if(std::string::npos == nodeNameDest.find("/") && std::string::npos == nodeNameDest.find("."))
+        if(std::string::npos == nodeNameDest.find("/"))
         {
             targetNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrig);
 
             if(targetNode != NULL)
             {
-                if(targetNode->directoryFlag && NULL == findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameDest))
+                if(targetNode->directoryFlag && NULL == findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameDest) && std::string::npos == nodeNameDest.find("."))
                 {
                     tree->updateNode(targetNode->id, nodeNameDest, targetNode->size);
                 }
@@ -625,7 +625,7 @@ void Terminal::mv(command_t aCommand)
                 }
                 else
                 {
-                    std::cout << "Error: You can not use same name for 2 files or directories" << std::endl;
+                    std::cout << "Error: You can not use same name for 2 files or directories or name a directory with \".\" " << std::endl;
                 }
             }
             else
@@ -655,7 +655,6 @@ void Terminal::mv(command_t aCommand)
  */
 void Terminal::cp(command_t aCommand)
 {
-
     if(aCommand.args->size() == 3)
     {
         std::string nodeNameOrigin(aCommand.args->at(0));
@@ -664,8 +663,11 @@ void Terminal::cp(command_t aCommand)
         node_t* originNode = NULL;
         node_t* destNode = NULL;
 
-        char* destPathCopy;
-        strcpy(destPathCopy, aCommand.args->at(1));
+
+        std::string otraForma(aCommand.args->at(1));
+        char* destPathCopy=(char*)otraForma.c_str();
+
+        //strcpy(destPathCopy, aCommand.args->at(1));
 
         if(!strncmp(&(destPathCopy[strlen(destPathCopy)-1]), "/", 1))
         {
@@ -685,6 +687,7 @@ void Terminal::cp(command_t aCommand)
         }
 
         originNode = findNodeAtDirectory(tree->getActualDirectoryNode(), nodeNameOrigin);
+
         destNode = findByPath(aCommand.args->at(1));
 
         if(originNode != NULL && destNode != NULL)
@@ -710,19 +713,22 @@ void Terminal::cp(command_t aCommand)
             }
             else
             {
+
                 if(findNodeAtDirectory(destNode, destNodeName) == NULL)
                 {
-                    FILE* tempFile = fopen(aCommand.args->at(0), "rb");
+
+                    //FILE* tempFile = fopen(aCommand.args->at(0), "rb");
                     char* dataFile = (char*)malloc(sizeof(char)*originNode->size);
 
-                    fread(dataFile, sizeof(char), originNode->size, tempFile);
-
+                    //fread(dataFile, sizeof(char), originNode->size, tempFile);
+                    raid->readFile(dataFile,originNode->size,originNode->vectorOfBlocksId);
                     std::vector<int> fileBlocksId = raid->writeFile(dataFile, originNode->size);
                     tree->addNode(destNode, destNodeName, false, originNode->size, fileBlocksId);
 
-                    fclose(tempFile);
+
                     free(dataFile);
                 }
+
                 else
                 {
                     std::cout << "Error: You can not use same name for 2 files" << std::endl;
@@ -820,6 +826,7 @@ void Terminal::run(){
     while(!exit){
         command.clean();
         std::cout << "$: ";
+        fflush(stdout);
         readCommand(&command);
         runCommand(command);
     }
